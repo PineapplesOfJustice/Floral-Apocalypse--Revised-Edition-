@@ -2,17 +2,17 @@
 
 @font-face {
     font-family: "Chakra Petch";
-    src: url("Asset/Fonts/ChakraPetch-Medium.ttf");
+    src: url("Asset/Font/ChakraPetch-Medium.ttf");
 }
 
 @font-face {
     font-family: "Special Elite";
-    src: url("Asset/Fonts/Special Elite.ttf");
+    src: url("Asset/Font/Special Elite.ttf");
 }
 
 @font-face {
     font-family: "Audiowide";
-    src: url("Asset/Fonts/Audiowide.ttf");
+    src: url("Asset/Font/Audiowide.ttf");
 }
 
 

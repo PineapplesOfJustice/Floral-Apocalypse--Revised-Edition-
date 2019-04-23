@@ -26,7 +26,7 @@ var inputDown = false;
 var inputLeft = false;
 var inputRight = false;
 
-var player = new Player(275, 280);
+var player;
 
 
 // Game Conent
@@ -37,7 +37,7 @@ function addGameContent(){
         areas.push(area0);
 
         var room0 = new Room(30, 400, 30, 25, 20, 0, 0, null);
-            one.addEntrance("top", null);
+            room0.addEntrance("top", null);
             areas[0].rooms.push(room0);
         var room1 = new Room(30, -550, 30, 25, 20, 0, 1, null);
             room1.addEntrance("bottom", null);
@@ -75,6 +75,9 @@ function addGameContent(){
         var zombie7 = new Zombie(1200, 100, 0, null, new MeleeZombie());
             areas[0].zombies.push(zombie7);
     
-        var thing0 = new makeCabinet(550, 550, "Nothing! Life isn't fair.", 0);
+        var thing0 = new Cabinet(550, 550, "Nothing! Life isn't fair.", 0);
             areas[0].things.push(thing0);
+    
+    
+    player = new Player();
 }

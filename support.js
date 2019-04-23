@@ -1,10 +1,10 @@
 // Player Constructor
 
-function Player(x, y){
-    this.x = x;
-    this.y = y;
+function Player(){
     this.width = 51;
     this.height = 90;
+    this.x = width/2 - this.width/2 - cameraX;
+    this.y = height/2 - this.height/2 - cameraY;
     this.hp = 100; 
     this.maxHp = 100;
     this.equip = "Gun";
@@ -29,9 +29,14 @@ function Player(x, y){
         y: 0,
     };
     this.areaId = 0;
-    this.roomId = 0; 
+    this.roomId = null; 
     this.frameUpdate = 2; 
     this.animationStep = 0;
+    this.death = false;
+    
+    this.areaId = findAreaId(this.x, this.y, this.areaId);
+    this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
+    console.log(this.areaId, this.roomId)
 }
 Player.prototype.updateGun = function(){
     this.aimX = mouseX - cameraX;
@@ -62,13 +67,14 @@ Player.prototype.showGun = function(){
     line((width/2 - cameraX)-(gunChangeX*pvGun3), (height/2 - cameraY)+5-(gunChangeY*pvGun3), (width/2 - cameraX)+(gunChangeX*pvGun2), (height/2 - cameraY)+5 +(gunChangeY*pvGun2));
 }
 Player.prototype.updateKinematic = function(){
+    this.motion = false;
     if(inputUp || inputDown || inputLeft || inputRight){
         var speedX = 0;
         var speedY = 0;
 
         var speedModifier = 1;
         if(this.sneaking){
-            speedModifier *= this.sneakingModifier;
+            speedModifier *= this.sneakModifier;
         }
         var movementSpeed = this.speed * speedModifier;
 
@@ -101,7 +107,6 @@ Player.prototype.updateKinematic = function(){
             //wall Sound;
         }
 
-        this.motion = false;
         if(speedX != 0 || speedY != 0){
             if(this.animationStep == imageSrc[this.getAnimationLabel()].length){
                 soundWaves.push(new soundWave(this.x+this.width/2, this.y+this.height/2, this.sneakModifier*randomNumber(15,25), 1, this.areaId, this.roomId));
@@ -121,21 +126,10 @@ Player.prototype.wallCollision = function(velocityX, velocityY){
         x: false,
         y: false,
     }
-    var area = areas[this.areaId];
-    for(var direction in area.blocks){
-        for(var block of area.blocks[direction]){
-            if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
-                collision.y = true;
-            }
-            if(collideRectRect(this.x+velocityX, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
-                collision.x = true;
-            }
-        }
-    }
-    
-    for(var entrance of area.entrances){
-        if(entrance.requirement != null && collideRectRect(this.x, this.y, this.width, this.height, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
-            for(var block of entrance.blocks){
+    if(this.roomId == null){
+        var area = areas[this.areaId];
+        for(var direction in area.blocks){
+            for(var block of area.blocks[direction]){
                 if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
                     collision.y = true;
                 }
@@ -144,16 +138,44 @@ Player.prototype.wallCollision = function(velocityX, velocityY){
                 }
             }
         }
+
+        for(var entrance of area.entrances){
+            if(entrance.requirement != null && collideRectRect(this.x, this.y, this.width, this.height, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
+                for(var block of entrance.blocks){
+                    if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
+                        collision.y = true;
+                    }
+                    if(collideRectRect(this.x+velocityX, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
+                        collision.x = true;
+                    }
+                }
+            }
+        }
+
+        for(var room of area.rooms){
+            if(collideRectRect(this.x, this.y, this.width, this.height, room.x, room.y, room.width, room.height)){
+                for(var direction in room.blocks){
+                    for(var block of room.blocks[direction]){
+                        if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
+                            collision.y = true;
+                        }
+                        if(collideRectRect(this.x+velocityX, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
+                            collision.x = true;
+                        }
+                    }
+                }
+            }
+        }
     }
-    
-    for(var room of area.rooms){
+    else{
+        var room = areas[this.areaId].rooms[this.roomId];
         if(collideRectRect(this.x, this.y, this.width, this.height, room.x, room.y, room.width, room.height)){
             for(var direction in room.blocks){
                 for(var block of room.blocks[direction]){
-                    if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, room.blockSize, room.blockSize)){
+                    if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
                         collision.y = true;
                     }
-                    if(collideRectRect(this.x+velocityX, this.y, this.width, this.height, block.x, block.y, room.blockSize, room.blockSize)){
+                    if(collideRectRect(this.x+velocityX, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
                         collision.x = true;
                     }
                 }
@@ -163,7 +185,10 @@ Player.prototype.wallCollision = function(velocityX, velocityY){
     return collision;
 }
 Player.prototype.getAnimationLabel = function(){
-    if(!this.motion){
+    if(this.death){
+        return "playerDeath";
+    }
+    else if(!this.motion){
         return "playerIdle";
     }
     else{
@@ -229,19 +254,19 @@ function Area(x, y, blockX, blockY, blockSize, areaId, areaName){
 Area.prototype.roomToBlocks = function(){
     //top wall
     for(var x=0; x<this.blockX; x++){
-        this.blocks.top.push(new Block(this.x + x*this.blockSize, this.y, this.blockSize, "top"));
+        this.blocks.top.push(new Block(this.x + x*this.blockSize, this.y, this.blockSize, "top", "rosebush"));
     }
     //left wall
     for(var y=0; y<this.blockY; y++){
-        this.blocks.left.push(new Block(this.x, this.y + y*this.blockSize, this.blockSize, "left"));
+        this.blocks.left.push(new Block(this.x, this.y + y*this.blockSize, this.blockSize, "left", "rosebush"));
     }
     //bottom wall
     for(var x=0; x<this.blockX; x++){
-        this.blocks.bottom.push(new Block(this.x + x*this.blockSize, this.y + this.height - this.blockSize, this.blockSize, "bottom"));
+        this.blocks.bottom.push(new Block(this.x + x*this.blockSize, this.y + this.height - this.blockSize, this.blockSize, "bottom", "rosebush"));
     }
     //right wall
     for(var y=0; y<this.blockY; y++){
-        this.blocks.right.push(new Block(this.x + this.width - this.blockSize, this.y + y*this.blockSize, this.blockSize, "right"));
+        this.blocks.right.push(new Block(this.x + this.width - this.blockSize, this.y + y*this.blockSize, this.blockSize, "right", "rosebush"));
     }
 }
 Area.prototype.addEntrance = function(wallDirection, blockCoordinate, exitId, requiredMilestone){
@@ -274,14 +299,13 @@ Area.prototype.addEntrance = function(wallDirection, blockCoordinate, exitId, re
     this.replaceEntranceBlocks(this.entrances[this.entrances.length-1]);
 }
 Area.prototype.replaceEntranceBlocks = function(entrance){
-    ////console.log(this)
     //top wall
     if(entrance.wallDirection == "top"){
         var currentBlocks = this.blocks.top;
         for(var x=0, length=this.blockX; x<length; x++){
             var currentBlock = currentBlocks[x];
             if(collideRectRect(entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height, currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.blockSize)){
-                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "locked"));
+                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "wood"));
                 currentBlocks.splice(x, 1);
                 x -= 1;
                 length -= 1;
@@ -295,7 +319,7 @@ Area.prototype.replaceEntranceBlocks = function(entrance){
         for(var y=0, length=this.blockY; y<length; y++){
             var currentBlock = currentBlocks[y];
             if(collideRectRect(entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height, currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.blockSize)){
-                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "locked"));
+                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "wood"));
                 currentBlocks.splice(y, 1);
                 y -= 1;
                 length -= 1;
@@ -308,7 +332,7 @@ Area.prototype.replaceEntranceBlocks = function(entrance){
         for(var x=0, length=this.blockX; x<length; x++){
             var currentBlock = currentBlocks[x];
             if(collideRectRect(entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height, currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.blockSize)){
-                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "locked"));
+                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "wood"));
                 currentBlocks.splice(x, 1);
                 x -= 1;
                 length -= 1;
@@ -321,7 +345,7 @@ Area.prototype.replaceEntranceBlocks = function(entrance){
         for(var y=0, length=this.blockY; y<length; y++){
             var currentBlock = currentBlocks[y];
             if(collideRectRect(entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height, currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.blockSize)){
-                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "locked"));
+                entrance.blocks.push(new Block(currentBlock.x, currentBlock.y, currentBlock.blockSize, currentBlock.wallDirection, "wood"));
                 currentBlocks.splice(y, 1);
                 y -= 1;
                 length -= 1;
@@ -330,16 +354,16 @@ Area.prototype.replaceEntranceBlocks = function(entrance){
     }
 }
 Area.prototype.show = function(){
-    for(var direction in this.blocks){
-        for(var block of this.blocks[direction]){
-            block.show();
-        }
-    }
-    for(entrance of this.entrances){
-        if(entrance.requirement != null && milestone[entrance.requirement] == null){
-            for(var block of entrance.blocks){
-                block.show();
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.width, this.height)){
+        for(var direction in this.blocks){
+            for(var block of this.blocks[direction]){
+                if(collideRectRect(-cameraX, -cameraY, width, height, block.x, block.y, block.blockSize, block.blockSize)){
+                    block.show();
+                }
             }
+        }
+        for(entrance of this.entrances){
+            entrance.show();
         }
     }
 }
@@ -367,19 +391,19 @@ function Room(x, y, blockX, blockY, blockSize, areaId, roomId, roomName){
 Room.prototype.roomToBlocks = function(){
     //top wall
     for(var x=0; x<this.blockX; x++){
-        this.blocks.top.push(new Block(this.x + x*this.blockSize, this.y, this.blockSize, "top"));
+        this.blocks.top.push(new Block(this.x + x*this.blockSize, this.y, this.blockSize, "top", "cobblestone"));
     }
     //left wall
     for(var y=0; y<this.blockY; y++){
-        this.blocks.left.push(new Block(this.x, this.y + y*this.blockSize, this.blockSize, "left"));
+        this.blocks.left.push(new Block(this.x, this.y + y*this.blockSize, this.blockSize, "left", "cobblestone"));
     }
     //bottom wall
     for(var x=0; x<this.blockX; x++){
-        this.blocks.bottom.push(new Block(this.x + x*this.blockSize, this.y + this.height - this.blockSize, this.blockSize, "bottom"));
+        this.blocks.bottom.push(new Block(this.x + x*this.blockSize, this.y + this.height - this.blockSize, this.blockSize, "bottom", "cobblestone"));
     }
     //right wall
     for(var y=0; y<this.blockY; y++){
-        this.blocks.right.push(new Block(this.x + this.width - this.blockSize, this.y + y*this.blockSize, this.blockSize, "right"));
+        this.blocks.right.push(new Block(this.x + this.width - this.blockSize, this.y + y*this.blockSize, this.blockSize, "right", "cobblestone"));
     }
 }
 Room.prototype.addEntrance = function(wallDirection, exitId){
@@ -409,11 +433,10 @@ Room.prototype.addEntrance = function(wallDirection, exitId){
     }   
     //console.log(areas)
     this.entrances.push(new Entrance(entranceX, entranceY, width, height, wallDirection, exitId, "room"));
-    areas[this.areaId].rooms[0].entrances.push(new Entrance(entranceX, entranceY, width, height, null, this.roomId, "room"));
+    areas[this.areaId].entrances.push(new Entrance(entranceX, entranceY, width, height, null, this.roomId, "room"));
     this.removeEntranceBlocks(this.entrances[this.entrances.length-1]);
 }
 Room.prototype.removeEntranceBlocks = function(entrance){
-    //console.log(this)
     //top wall
     if(entrance.wallDirection == "top"){
         var currentBlocks = this.blocks.top;
@@ -464,9 +487,14 @@ Room.prototype.removeEntranceBlocks = function(entrance){
     }
 }
 Room.prototype.show = function(){
-    for(var direction in this.blocks){
-        for(var block of this.blocks[direction]){
-            block.show();
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.width, this.height)){
+        fill("#654321");
+        noStroke();
+        rect(this.x, this.y, this.width, this.height);
+        for(var direction in this.blocks){
+            for(var block of this.blocks[direction]){
+                block.show();
+            }
         }
     }
 }
@@ -483,8 +511,10 @@ function Block(x, y, blockSize, wallDirection, type){
     }
 }
 Block.prototype.show = function(){
-    //image(imageSrc["block"], this.x, this.y, this.blockSize, this.blockSize);
-    image(imageSrc[this.type + this.wallAlignment], this.x, this.y, this.blockSize, this.blockSize);
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.blockSize, this.blockSize)){
+        //image(imageSrc["block"], this.x, this.y, this.blockSize, this.blockSize);
+        image(imageSrc[this.type + this.wallAlignment], this.x, this.y, this.blockSize, this.blockSize);
+    }
 }
 
 function Entrance(x, y, width, height, wallDirection, exitId, type){
@@ -497,6 +527,15 @@ function Entrance(x, y, width, height, wallDirection, exitId, type){
     this.type = type;
     this.blocks = [];
     this.requirement = null;
+}
+Entrance.prototype.show = function(){
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x-this.width/2, this.y-this.height/2, this.width, this.height)){
+        if(this.requirement != null && milestone[this.requirement] == null && collideRectRect(-cameraX, -cameraY, width, height, this.x-this.width/2, this.y-this.height/2, this.width, this.height)){
+            for(var block of this.blocks){
+                block.show();
+            }
+        }
+    }
 }
 
 
@@ -515,81 +554,107 @@ function Zombie(x, y, areaId, roomId, type){
     this.velocityX;
     this.velocityY;
     this.velocityDirection;
-    this.animationStep = 0;
     this.lineOfSight;
     this.alerted = false;
     this.investigation = {};
     this.aggravated = false;
     this.enemy = {};
     this.action = "motion";
+    this.death = false;
+    this.frameUpdate = 2;
+    this.animationStep = 0;
     
+    this.roomId = findRoomId(x, y, areaId, roomId);
     this.updateIdlePosition();
     this.updateKinematic();
-    ////console.log(this.velocityX, this.velocityY)
 }
 Zombie.prototype.updateKinematic = function(){
     var roomDilemma = false;
-    var calm = 1;
+    var speedModifier = 1;
     if(this.aggravated){
         if(this.enemy.roomId == this.roomId){
             var differenceX = this.enemy.x - this.x;
             var differenceY = this.enemy.y - this.y;
         }
         else{
-            var entrance = false;
             roomDilemma = true;
-            for(var i=1, length=rooms[this.roomId].entrances.length; i<length; i++){
-                if(rooms[this.roomId].entrances[i].exitId == this.enemy.roomId){
-//                    rootDilemma = false
-                    entrance = rooms[this.roomId].entrances[i];
-                    i = length;
+            var chosenEntrance = false;
+            if(this.roomId == null){
+                for(var entrance of areas[this.areaId].entrances){
+                    if(entrance.type == "room" && entrance.exitId == this.enemy.roomId){
+                        chosenEntrance = entrance;
+                    }
                 }
             }
-            if(!entrance){
-                entrance = rooms[this.enemy.roomId].entrances[0];
+            else{
+                for(var entrance of areas[this.areaId].rooms[this.roomId].entrances){
+                    if(entrance.exitId == this.enemy.roomId){
+                        chosenEntrance = entrance;
+                    }
+                }
             }
-            var differenceX = entrance.x - this.x;
-            var differenceY = entrance.y - this.y;
+            if(!chosenEntrance){
+                var differenceX = this.enemy.x - this.x;
+                var differenceY = this.enemy.y - this.y;
+            }
+            else{
+                var differenceX = chosenEntrance.x - this.x;
+                var differenceY = chosenEntrance.y - this.y;
+            }
         }
     }
     else if(this.alerted){
-        calm=.75
+        speedModifier = 0.75;
         if(this.investigation.roomId == this.roomId){
             var differenceX = this.investigation.x - this.x;
             var differenceY = this.investigation.y - this.y;
         }
         else{
-            var entrance = false;
             roomDilemma = true;
-            for(var i=1, length=rooms[this.roomId].entrances.length; i<length; i++){
-                if(rooms[this.roomId].entrances[i].exitId == this.investigation.roomId){
-                    entrance = rooms[this.roomId].entrances[i];
-                    i = length;
+            var chosenEntrance = false;
+            if(this.roomId == null){
+                for(var entrance of areas[this.areaId].entrances){
+                    if(entrance.type == "room" && entrance.exitId == this.investigation.roomId){
+                        chosenEntrance = entrance;
+                    }
                 }
             }
-            if(!entrance){
-                entrance = rooms[this.roomId].entrances[0];
+            else{
+                for(var entrance of areas[this.areaId].rooms[this.roomId].entrances){
+                    if(entrance.exitId == this.investigation.roomId){
+                        chosenEntrance = entrance;
+                    }
+                }
             }
-            var differenceX = entrance.x - this.x;
-            var differenceY = entrance.y - this.y;
+            if(!chosenEntrance){
+                var differenceX = this.investigation.x - this.x;
+                var differenceY = this.investigation.y - this.y;
+            }
+            else{
+                var differenceX = chosenEntrance.x - this.x;
+                var differenceY = chosenEntrance.y - this.y;
+            }
         }
     }
     else{
-        calm = .5
+        speedMofifier = 0.5;
         var differenceX = this.idleLocationX - this.x;
         var differenceY = this.idleLocationY - this.y;
     }
+    var theta = findRotation(differenceX, differenceY);
+    
     var hypotenuse = findHypotenuse(differenceX, differenceY);
     if(this.aggravated){
         hypotenuse -= this.type.preferredDistanceFromEnemy;
+        differenceX = hypotenuse * Math.cos(theta); 
+        differenceY = hypotenuse * Math.sin(theta); 
     }
-    var theta = findRotation(differenceX, differenceY);
     
-    if(hypotenuse <= this.type.speed){ 
+    if(hypotenuse <= this.type.speed*speedModifier){ 
         this.x += differenceX;
         this.y += differenceY;
         if(roomDilemma){
-            this.updateRoomId();
+            this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
         }
         else if(this.aggravated){
             this.action = "attack";
@@ -605,58 +670,35 @@ Zombie.prototype.updateKinematic = function(){
         }
     }
     else{
-        this.velocityX = (this.type.speed * calm) * Math.cos(theta);
-        this.velocityY = (this.type.speed * calm) * Math.sin(theta);
-        var safeY = true
-        var safeX = true
-    for(var f of areas[this.areaId].rooms){
-       
-            for(var k of f.blocks.top){
-            if(collideRectRect(this.x,this.y+this.velocityY,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeY = false
-            }
-                if(collideRectRect(this.x+this.velocityX,this.y,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeX = false
-            }  
-            }
-            for(var k of f.blocks.bottom){
-            if(collideRectRect(this.x,this.y+this.velocityY,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeY = false
-            }
-                if(collideRectRect(this.x+this.velocityX,this.y,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeX = false
-            }
-            }
-            for(var k of f.blocks.left){
-            if(collideRectRect(this.x,this.y+this.velocityY,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeY = false
-            }
-                if(collideRectRect(this.x+this.velocityX,this.y,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeX = false
-            }  
-            }
-            for(var k of f.blocks.right){
-            if(collideRectRect(this.x,this.y+this.velocityY,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeY = false
-            }
-                if(collideRectRect(this.x+this.velocityX,this.y,this.type.width,this.type.height,k.x,k.y,f.blockSize,f.blockSize)){
-                safeX = false
-            } 
-            }
+        this.velocityX = (this.type.speed * speedModifier) * Math.cos(theta);
+        this.velocityY = (this.type.speed * speedModifier) * Math.sin(theta);
         
+        var collision = this.wallCollision(this.velocityX, this.velocityY);
+        if(!collision.x && !collision.y){ 
+            collision = this.zombieCollision(this.velocityX, this.velocityY);
+        }
         
-    }
-        if(safeX){
+        if(!collision.x){
+            this.velocityX = (this.type.speed * speedModifier) * posNeg(this.velocityX);
+            this.velocityY = 0;
+        }
+        else if(!collision.y){
+            this.velocityX = 0;
+            this.velocityY = (this.type.speed * speedModifier) * posNeg(this.velocityY);
+        }
+        else{
+            this.velocityX = 0;
+            this.velocityY = 0;
+        }
+        
         this.x += this.velocityX;
-        }
-        if(safeY){
         this.y += this.velocityY;
-        }
-        this.updateRoomId()
+        this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
     }
 }
+/*
 Zombie.prototype.updateRoomId = function(){
-    var isCollision = false;
+    var collision = false;
     for(var i=1, length=rooms.length; i<length; i++){
         var currentRoom = rooms[i];
         if(collidePointRect(this.x, this.y, currentRoom.x, currentRoom.y, currentRoom.width, currentRoom.height)){
@@ -668,22 +710,21 @@ Zombie.prototype.updateRoomId = function(){
         this.roomId = 0;
     }
 }
+*/
 Zombie.prototype.updateIdlePosition = function(){
     var mustRelocate = false;
-//    this.updateRoomId()
     var theta = Math.random()*TWO_PI;
     var distance = (Math.random()*(this.type.idleLocationMaxDistance-100))+100;
     var idleLocationX = this.x + distance * Math.cos(theta);
     var idleLocationY = this.y + distance * Math.sin(theta);
-    if(this.roomId != findRoom(idleLocationX,idleLocationY) && !mustRelocate){
-//        for(var i=0, length=rooms.length; i<length; i++){
-//            var currentRoom = rooms[i];
-//            if(collideRectRect(idleLocationX, idleLocationY, this.type.width, this.type.height, currentRoom.x, currentRoom.y, currentRoom.width, currentRoom.height)){
-//                mustRelocate = true;
-////                i = length;
-//            }
-//        }
-        mustRelocate = true
+    if(!mustRelocate && this.roomId != findRoomId(idleLocationX, idleLocationY, this.areaId, this.roomId)){
+        mustRelocate = true;
+    }
+    if(!mustRelocate){
+        var collision = this.wallCollision(distance*Math.cos(theta), distance*Math.sin(theta));
+        if(collision.x){
+            mustRelocate = true;
+        }
     }
     if(mustRelocate){
         this.updateIdlePosition();
@@ -694,24 +735,19 @@ Zombie.prototype.updateIdlePosition = function(){
     }
 }
 Zombie.prototype.soundCollision = function(){
-    for(var i=0, length=soundWaves.length; i<length; i++){
-        var currentWave = soundWaves[i];
+    for(var s=0, soundLength=soundWaves.length; s<soundLength; s++){
+        var currentWave = soundWaves[s];
         var zombiePinged = false;
         for(var l=0, pingLength=currentWave.zombiePinged.length; l<pingLength; l++){
             if(currentWave.zombiePinged[l] == this){
                 zombiePinged = true;
             }
         }
-//        var hearChance = Math.random()
-        if(!zombiePinged && collideRectCircle(this.x, this.y, this.type.width, this.type.height, currentWave.originX, currentWave.originY, currentWave.currentRadius)){
-//                    ////console.log(hearChance+"pre")
-//                            ////console.log((currentWave.intensity/currentWave.currentRadius)*10)
-            currentWave.zombiePinged.push(this)
-            if(!this.aggravated && (!this.alerted || this.investigation.curiousLevel < (currentWave.intensity/currentWave.currentRadius)) && .4<((currentWave.intensity/currentWave.currentRadius)*10)){
-//                ////console.log(hearChance)
+        if(!zombiePinged && collideRectCircle(this.x, this.y, this.type.width, this.type.height, currentWave.x, currentWave.y, currentWave.radius)){
+            currentWave.zombiePinged.push(this);
+            if(!this.aggravated && (!this.alerted || this.investigation.curiousLevel < (currentWave.intensity/currentWave.radius)) && Math.random() < currentWave.intensity/currentWave.radius*10){
                 this.alerted = true;
-                this.investigation = new Investigation(currentWave.originX, currentWave.originY, currentWave.roomId, currentWave.intensity/currentWave.currentRadius)
-                currentWave.zombiePinged.push(this);
+                this.investigation = new Investigation(currentWave.x, currentWave.y, currentWave.roomId, currentWave.intensity/currentWave.radius)
             }
         }
     }
@@ -726,58 +762,160 @@ Zombie.prototype.threatZoneCollision = function(){
         }
     }
 }
-Zombie.prototype.show = function(){
-    var direction = "right";
-    if(this.velocityX < 0){
-        direction = "left";
+Zombie.prototype.wallCollision = function(velocityX, velocityY){
+    var collision = {
+        x: false,
+        y: false,
     }
-    //image(imageSrc[this.type.tag + this.action + direction][this.animationStep], this.x, this.y, this.type.width, this.type.height);
+    var area = areas[this.areaId];
+    if(this.roomId == null){
+        for(var direction in area.blocks){
+            for(var block of area.blocks[direction]){
+                if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                    collision.y = true;
+                }
+                if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                    collision.x = true;
+                }
+            }
+        }
+
+        for(var entrance of area.entrances){
+            if(entrance.requirement != null && collideRectRect(this.x, this.y, this.type.width, this.type.height, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
+                for(var block of entrance.blocks){
+                    if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                        collision.y = true;
+                    }
+                    if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                        collision.x = true;
+                    }
+                }
+            }
+        }
     
-    var hpWidth = map(this.hp, 0, this.type.maxHp, 0, this.type.width);
-    noFill()
-    stroke("black")
-    strokeWeight(1)
-    rect(this.x, this.y+this.type.height+5, this.width, 5);
-    fill("red")
-    rect(this.x, this.y+this.type.height+5, hpWidth, 5)
-    
-    fill("purple");
-    rect(this.x, this.y, this.type.width, this.type.height);
-    
-    
-    if(this.aggravated){
-        textAlign(CENTER, BOTTOM);
-        fill("red")
-        stroke("black")
-        strokeWeight(1);
-        textSize(30);
-        text("!", this.x+this.type.width/2, this.y-7);
+        for(var room of area.rooms){
+            if(collideRectRect(this.x, this.y, this.type.width, this.type.height, room.x, room.y, room.width, room.height)){
+                for(var direction in room.blocks){
+                    for(var block of room.blocks[direction]){
+                        if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                            collision.y = true;
+                        }
+                        if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                            collision.x = true;
+                        }
+                    }
+                }
+            }
+        }
     }
-    else if(this.alerted){
-        textAlign(CENTER, BOTTOM);
-        fill("red")
-        stroke("black")
-        strokeWeight(1);
-        textSize(30);
-        text("?", this.x+this.type.width/2, this.y-7);
+    else{
+        var room = areas[this.areaId].rooms[this.roomId];
+        if(collideRectRect(this.x, this.y, this.type.width, this.type.height, room.x, room.y, room.width, room.height)){
+            for(var direction in room.blocks){
+                for(var block of room.blocks[direction]){
+                    if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                        collision.y = true;
+                    }
+                    if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                        collision.x = true;
+                    }
+                }
+            }
+        }
     }
-    
-    this.animationStep += 1;
-    /*if(this.animationStep > this.type.attackFrame){
-        this.animationStep = 0;
-    }*/
-    if(this.animationStep == imageSrc[this.type.tag + this.action + direction].length){
-        this.animationStep = 0;
-    }
+    return collision;
 }
-Zombie.prototype.showThreatZone = function(){
-    fill(0, 50);
-    stroke(0, 100);
-    ellipse(this.x+this.type.width/2, this.y+this.type.height/2, this.type.threatRadius);
+Zombie.prototype.zombieCollision = function(velocityX, velocityY){
+    var collision = {
+        x: false,
+        y: false,
+    }
+    for(var zombie of areas[this.areaId].zombies){
+        if(zombie != this){
+            if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                collision.y = true;
+            }
+            if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                collision.x = true;
+            }
+        }
+    }
+    return collision;
 }
 Zombie.prototype.playerCollision = function(){
     if(collideRectRect(this.x, this.y, this.type.width, this.type.height, player.x, player.y, player.width, player.height)){    
        this.action = "attack";
+    }
+}
+Zombie.prototype.showHpBar = function(){
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.type.width, this.type.height)){
+        var hpWidth = map(this.hp, 0, this.type.maxHp, 0, this.type.width);
+        noFill();
+        stroke("black");
+        strokeWeight(1);
+        rect(this.x, this.y+this.type.height+5, this.type.width, 5);
+        fill("green");
+        rect(this.x, this.y+this.type.height+5, hpWidth, 5);
+    }
+}
+Zombie.prototype.show = function(){
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.type.width, this.type.height)){
+        var animationLabel = this.getAnimationLabel();
+
+        if(frameCount % this.frameUpdate == 0){
+            this.animationStep += 1;
+        }
+        if(this.animationStep == imageSrc[animationLabel].length){
+            this.animationStep = 0;
+        }
+
+        image(imageSrc[animationLabel][this.animationStep], this.x, this.y, this.type.width, this.type.height);
+
+        //fill("purple");
+        //rect(this.x, this.y, this.type.width, this.type.height);
+
+        if(this.aggravated){
+            textAlign(CENTER, BOTTOM);
+            fill("red")
+            stroke("black")
+            strokeWeight(1);
+            textSize(30);
+            text("!", this.x+this.type.width/2, this.y-7);
+        }
+        else if(this.alerted){
+            textAlign(CENTER, BOTTOM);
+            fill("red")
+            stroke("black")
+            strokeWeight(1);
+            textSize(30);
+            text("?", this.x+this.type.width/2, this.y-7);
+        }
+    }
+}
+Zombie.prototype.getAnimationLabel = function(){
+    if(this.death){
+        return (this.type.tag + "Death");
+    }
+    else if(this.velocityX == 0 && this.velocityY == 0 && this.action != "attack"){
+        return (this.type.tag + "Idle");
+    }
+    else{
+        var direction = "Right";
+        if(this.velocityX < 0){
+            direction = "Left";
+        }
+        var action = "Walk";
+        if(this.action == "attack"){
+            action = "Attack";
+        }
+        return (this.type.tag + action + direction);
+    }
+}
+Zombie.prototype.showThreatZone = function(){
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.type.width, this.type.height)){
+        fill(0, 50);
+        stroke(0, 100);
+        ellipse(this.x+this.type.width/2, this.y+this.type.height/2, this.type.threatRadius);
     }
 }
 
@@ -794,27 +932,24 @@ function MeleeZombie(){
     this.threatRadius = 280;
     this.preferredDistanceFromEnemy = 7;
     
-    this.idleLocationMaxDistance = 150;
-    this.damage = 70;
-    this.attackAnimationStep = 4;
+    this.idleLocationMaxDistance = 250;
+    this.damage = 7;
     this.tag = "meleeZombie";
 }
 MeleeZombie.prototype.attack = function(enemy){
-    if(this.parent.animationStep == this.attackAnimationStep){
+    var animationLabel = this.parent.getAnimationLabel();
+    if(this.parent.animationStep == imageSrc[animationLabel].length-1){
         if(collideRectRect(this.parent.x, this.parent.y, this.width, this.height, enemy.x, enemy.y, enemy.width, enemy.height)){
             enemy.hp -= this.damage;
-            //console.log("attacked")
-        } 
-    }
-    if(this.parent.animationStep == this.attackFrame-1){
-        this.parent.action = "motion";
-    }
-    if(enemy.hp <= 0){
-        enemy.death = true;
-        this.parent.aggravated = false;
-        this.parent.enemy = null;
-        deathAnimation();
-        this.parent.updateIdlePosition();
+            if(enemy.hp <= 0){
+                enemy.death = true;
+                this.parent.aggravated = false;
+                this.parent.enemy = null;
+                deathAnimation();
+                this.parent.updateIdlePosition();
+            }
+        }
+        this.parent.action = "motion"; 
     }
 }
 
@@ -872,7 +1007,7 @@ Projectile.prototype.wallCollision = function(){
     }
     
     for(var entrance of area.entrances){
-        if(entrance.requirement != null && collideRectRect(this.x, this.y, this.size, this.size, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
+        if((entrance.type == "area" || entrance.requirement != null) && collideRectRect(this.x, this.y, this.size, this.size, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
             for(var block of entrance.blocks){
                 if(collideRectRect(this.x, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
                     return true;
@@ -885,7 +1020,7 @@ Projectile.prototype.wallCollision = function(){
         if(collideRectRect(this.x, this.y, this.size, this.size, room.x, room.y, room.width, room.height)){
             for(var direction in room.blocks){
                 for(var block of room.blocks[direction]){
-                    if(collideRectRect(this.x, this.y, this.width, this.height, block.x, block.y, room.blockSize, room.blockSize)){
+                    if(collideRectRect(this.x, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
                         return true;
                     }
                 }
@@ -911,7 +1046,7 @@ function soundWave(x, y, intensity, radius, areaId, roomId){
     this.radius = radius;
     this.radiusExpansionSpeed = 12;
     this.areaId = areaId;
-    this.roomId = originRoom;
+    this.roomId = roomId;
     this.zombiePinged = [];
 }
 soundWave.prototype.expandRadius = function(){
@@ -919,11 +1054,11 @@ soundWave.prototype.expandRadius = function(){
 }
 soundWave.prototype.show = function(){
     noFill();
-    stroke(255, 150);
+    stroke(0, 150);
     if(this.zombiePinged.length > 0){
-        stroke(255, 0, 0, 150);
+        stroke(255, 100, 0, 150);
     }
-    var currentStrokeWeight = this.intenstiy/this.radius;
+    var currentStrokeWeight = this.intensity/this.radius*50;
     strokeWeight(currentStrokeWeight);
     ellipse(this.x, this.y, this.radius, this.radius);
 }
@@ -964,37 +1099,42 @@ Sign.prototype.interact = function(){
 function Cabinet(x, y, contents, areaId){
     this.x = x;
     this.y = y;
-    this.width = 50;
-    this.height = 30;
+    this.width = 100;
+    this.height = 50;
     this.contents = contents;
     this.type = "cabinet"
     this.open = false;
     this.areaId = areaId;
 }
-Cabinet.prototype.show = function(){
-    fill("brown");
-    rect(this.x, this.y, this.width, this.height);
-    if(this.open){
-        fill("black");
-        stroke("white");
-        strokeWeight(1);
-        textSize(20);
-        textAlign(CENTER, CENTER);
-        textFont(fontSrc["chakraPetch"]);
-        text(this.contents, this.x, this.y-50, this.width, 40);
-    }
-}
 Cabinet.prototype.interact = function(){
-    if(this.open == false){
-        this.open = true
+    if(!this.open){
+        this.open = true;
         if(this.openEffect != null){
             this.openEffect();
         }
     }
     else{
-        this.open = false
+        this.open = false;
         if(this.closeEffect != null){
             this.closeEffect();
+        }
+    }
+}
+Cabinet.prototype.show = function(){
+    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.width, this.height)){
+        var condition = "Close";
+        if(this.open){
+            condition = "Open";
+        }
+        image(imageSrc["wardrobe" + condition], this.x, this.y, this.width, this.height);
+        if(this.open){
+            fill("black");
+            stroke("white");
+            strokeWeight(0.5);
+            textSize(23);
+            textAlign(CENTER, CENTER);
+            textFont(fontSrc["chakraPetch"]);
+            text(this.contents, this.x, this.y-100, this.width, 90);
         }
     }
 }
@@ -1043,11 +1183,15 @@ function randomNumber(min, max) {
 function findRoomId(x, y, areaId, roomId){
     var collision = false;
     var area = areas[areaId];
-    var room = area.rooms[roomId];
-    if(roomId != null && collidePointRect(x, y, room.x, room.y, room.width, room.height)){
-        collision = true; 
-        return roomId;
+    
+    if(roomId != null){
+        var room = area.rooms[roomId];
+        if(collidePointRect(x, y, room.x, room.y, room.width, room.height)){
+            collision = true; 
+            return roomId;
+        }
     }
+    
     for(var i=0, length=area.rooms.length; i<length && i!=roomId; i++){
         var currentRoom = area.rooms[i];
         if(collidePointRect(x, y, currentRoom.x, currentRoom.y, currentRoom.width, currentRoom.height)){
@@ -1055,6 +1199,7 @@ function findRoomId(x, y, areaId, roomId){
             return i;
         }
     }
+    
     if(!collision){
         return null;
     }
@@ -1062,11 +1207,15 @@ function findRoomId(x, y, areaId, roomId){
 
 function findAreaId(x, y, areaId){
     var collision = false;
-    var area = areas[areaId];
-    if(areaId != null && collidePointRect(x, y, area.x, area.y, area.width, area.height)){
-        collision = true; 
-        return areaId;
+    
+    if(areaId != null){
+        var area = areas[areaId];
+        if(collidePointRect(x, y, area.x, area.y, area.width, area.height)){
+            collision = true; 
+            return areaId;
+        }
     }
+    
     for(var i=0, length=areas.length; i<length && i!=areaId; i++){
         var currentArea = areas[i];
         if(collidePointRect(x, y, currentArea.x, currentArea.y, currentArea.width, currentArea.height)){
@@ -1074,6 +1223,7 @@ function findAreaId(x, y, areaId){
             return i;
         }
     }
+    
     if(!collision){
         return null;
     }

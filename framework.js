@@ -61,22 +61,24 @@ function preload() {
     
     imageSrc["playerDeath"] = [loadImage("Asset/Image/player/death/0.png"), loadImage("Asset/Image/player/death/1.png"), loadImage("Asset/Image/player/death/2.png"), loadImage("Asset/Image/player/death/3.png"), loadImage("Asset/Image/player/death/4.png"), loadImage("Asset/Image/player/death/5.png"), ]
 
-    imageSrc["zombieWalkLeft"] = [loadImage("Asset/Image/zombie/walk/left/0.png"), loadImage("Asset/Image/zombie/walk/left/1.png"), loadImage("Asset/Image/zombie/walk/left/2.png"), loadImage("Asset/Image/zombie/walk/left/3.png")];
+    imageSrc["meleeZombieWalkLeft"] = [loadImage("Asset/Image/zombie/walk/left/0.png"), loadImage("Asset/Image/zombie/walk/left/1.png"), loadImage("Asset/Image/zombie/walk/left/2.png"), loadImage("Asset/Image/zombie/walk/left/3.png")];
 
-    imageSrc["zombieWalkRight"] = [loadImage("Asset/Image/zombie/walk/right/0.png"), loadImage("Asset/Image/zombie/walk/right/1.png"), loadImage("Asset/Image/zombie/walk/right/2.png"), loadImage("Asset/Image/zombie/walk/right/3.png")];
+    imageSrc["meleeZombieWalkRight"] = [loadImage("Asset/Image/zombie/walk/right/0.png"), loadImage("Asset/Image/zombie/walk/right/1.png"), loadImage("Asset/Image/zombie/walk/right/2.png"), loadImage("Asset/Image/zombie/walk/right/3.png")];
 
-    imageSrc["zombieIdle"] = [loadImage("Asset/Image/zombie/idle/0.png")];
+    imageSrc["meleeZombieIdle"] = [loadImage("Asset/Image/zombie/idle/0.png")];
     
-    imageSrc["zombieAttackLeft"] = [loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/2.png")];
+    imageSrc["meleeZombieAttackLeft"] = [loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/2.png")];
     
-    imageSrc["zombieAttackRight"] = [loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/2.png")]
+    imageSrc["meleeZombieAttackRight"] = [loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/2.png")]
     
-    imageSrc["zombieDeath"] = [loadImage("Asset/Image/zombie/death/0.png"), loadImage("Asset/Image/zombie/death/1.png"), loadImage("Asset/Image/zombie/death/2.png"), loadImage("Asset/Image/zombie/death/3.png"), loadImage("Asset/Image/zombie/death/4.png"), loadImage("Asset/Image/zombie/death/5.png"), loadImage("Asset/Image/zombie/death/6.png"), loadImage("Asset/Image/zombie/death/7.png"), loadImage("Asset/Image/zombie/death/8.png"), loadImage("Asset/Image/zombie/death/9.png"), loadImage("Asset/Image/zombie/death/10.png"), ]
+    imageSrc["meleeZombieDeath"] = [loadImage("Asset/Image/zombie/death/0.png"), loadImage("Asset/Image/zombie/death/1.png"), loadImage("Asset/Image/zombie/death/2.png"), loadImage("Asset/Image/zombie/death/3.png"), loadImage("Asset/Image/zombie/death/4.png"), loadImage("Asset/Image/zombie/death/5.png"), loadImage("Asset/Image/zombie/death/6.png"), loadImage("Asset/Image/zombie/death/7.png"), loadImage("Asset/Image/zombie/death/8.png"), loadImage("Asset/Image/zombie/death/9.png"), loadImage("Asset/Image/zombie/death/10.png"), ]
 
-    imageSrc["cobblestone"] = [loadImage("Asset/Image/miscellaneous/cobblestone.png")];
-    imageSrc["wood"] = [loadImage("Asset/Image/miscellaneous/wood.png")];
-    imageSrc["rosebushHorizontal"] = [loadImage("Asset/Image/miscellaneous/rosebush.png")];
-    imageSrc["rosebushVertical"] = [loadImage("Asset/Image/miscellaneous/rosebushVertical.png")];
+    imageSrc["cobblestoneHorizontal"] = loadImage("Asset/Image/miscellaneous/cobblestone.png");
+    imageSrc["cobblestoneVertical"] = loadImage("Asset/Image/miscellaneous/cobblestone.png");
+    imageSrc["woodHorizontal"] = loadImage("Asset/Image/miscellaneous/wood.png");
+    imageSrc["woodVertical"] = loadImage("Asset/Image/miscellaneous/wood.png");
+    imageSrc["rosebushHorizontal"] = loadImage("Asset/Image/miscellaneous/rosebush.png");
+    imageSrc["rosebushVertical"] = loadImage("Asset/Image/miscellaneous/rosebushVertical.png");
     //imageSrc["roadHorizontal"] = loadImage("Asset/Image/miscellaneous/Mossy & Cracked Road.png");
     //imageSrc["roadVertical"] = loadImage("Asset/Image/miscellaneous/Mossy & Cracked Road Vertical.png");
 
@@ -84,21 +86,20 @@ function preload() {
 
     imageSrc["hitmarker"] = [loadImage("Asset/Image/miscellaneous/hitmarker/0.png"), loadImage("Asset/Image/miscellaneous/hitmarker/1.png")];
 
-    imageSrc["wardrobeClose"] = [loadImage("Asset/Image/miscellaneous/wardrobe/open/0.png")];
-    imageSrc["wardrobeOpen"] = [loadImage("Asset/Image/miscellaneous/wardrobe/close/0.png")];
+    imageSrc["wardrobeClose"] = loadImage("Asset/Image/miscellaneous/wardrobe/close/0.png");
+    imageSrc["wardrobeOpen"] = loadImage("Asset/Image/miscellaneous/wardrobe/open/0.png");
     imageSrc["titlescreen"] = loadImage("Asset/Image/miscellaneous/titlescreen.png");
     imageSrc["titlescreenHover"] = loadImage("Asset/Image/miscellaneous/titlescreenHover.png");
 }
 
 function setup() {
-    canvas = createCanvas(1200, 640);
+    canvas = createCanvas(800, 600);
     var offsetX = (windowWidth - width) /2;
     var offsetY = (windowHeight - height) / 2;
     canvas.position(offsetX, offsetY);
     //soundSrc["soundtrack"].play();
     
     areas = [];
-    things = [];
     soundWaves = [];
     projectiles = [];
     
@@ -114,25 +115,40 @@ function setup() {
 function draw() {
     if(gameActive){
         translate(cameraX, cameraY);
-        
-        stroke("black");
-        strokeWeight(1);
-        fill("slategray");
+        background("green");
+        noStroke();
+        fill("#727472");
         rect(0, 0, 2590, 350);
+        
+        for(var area of areas){
+            areas[player.areaId].show();
+        }
+        
+        for(var area of areas){
+            if(collideRectRect(-cameraX, -cameraY, width, height, area.x, area.y, area.width, area.height)){
+                for(var room of area.rooms){
+                    room.show();
+                }
+            }
+        }
+        
+        for(var area of areas){
+            if(collideRectRect(-cameraX, -cameraY, width, height, area.x, area.y, area.width, area.height)){
+                for(var current of area.zombies){
+                    current.showThreatZone();
+                }
+            }
+        }
          
         for(var s=0, length=soundWaves.length; s<length; s++){
             var current = soundWaves[s];
             current.expandRadius();
             current.show();
-            if(current.intensity/current.radius*10 < 0.4){
+            if(current.intensity/current.radius*10 < 0.1){
                 soundWaves.splice(s, 1);
                 s -= 1;
                 length -= 1;
             }
-        }
-        
-        for(var current of areas[player.areaId].zombies){
-            current.showThreatZone();
         }
         
         for(var p=0, length=projectiles.length; p<length; p++){
@@ -155,14 +171,12 @@ function draw() {
             }
         }
         
-        areas[player.areaId].show();
-        
-        for(var room of areas[player.areaId].rooms){
-            room.show();
-        }
-        
-        for(var thing of areas[player.areaId].things){
-            thing.show();
+        for(var area of areas){
+            if(collideRectRect(-cameraX, -cameraY, width, height, area.x, area.y, area.width, area.height)){
+                for(var thing of area.things){
+                    thing.show();
+                }
+            }
         }
         
         player.areaId = findAreaId(player.x,player.y, player.areaId);
@@ -182,26 +196,30 @@ function draw() {
             player.show();
         }
         
-        for(var z=0, length=areas[player.areaId].zombies.length; z<length; z++){
-            var current = areas[player.areaId].zombies[z];
-            var deathAnimationFinish = false;
-            if(current.death){
-                
-            }
-            else if(current.action == "motion"){
-                current.updateKinematic();
-                current.soundCollision();
-                current.threatZoneCollision();
-                current.playerCollision();
-            }
-            else if(current.action == "attack"){
-                current.type.attack(current.enemy);
-            }
-            var deathAnimationFinish = current.show();
-            if(deathAnimationFinish){
-                areas[player.areaId].zombies.splice(z, 1);
-                z -= 1;
-                length -= 1;
+        for(var area of areas){
+            if(collideRectRect(-cameraX, -cameraY, width, height, area.x, area.y, area.width, area.height)){
+                for(var z=0, length=area.zombies.length; z<length; z++){
+                    var current = areas[player.areaId].zombies[z];
+                    var deathAnimationFinish = false;
+                    if(current.death){
+
+                    }
+                    else if(current.action == "motion"){
+                        current.updateKinematic();
+                        current.soundCollision();
+                        current.threatZoneCollision();
+                        current.playerCollision();
+                    }
+                    else if(current.action == "attack"){
+                        current.type.attack(current.enemy);
+                    }
+                    var deathAnimationFinish = current.show();
+                    if(deathAnimationFinish){
+                        areas[player.areaId].zombies.splice(z, 1);
+                        z -= 1;
+                        length -= 1;
+                    }
+                }
             }
         }
     }
@@ -378,7 +396,7 @@ function keyPressed() {
         }
         // E Key
         else if(keyCode == 69){
-            for(var thing of things) {
+            for(var thing of areas[player.areaId].things) {
                 if(collideRectCircle(thing.x, thing.y, thing.width, thing.height, player.x+player.width/2, player.y+player.height/2, 100)){
                     thing.interact();
                 }

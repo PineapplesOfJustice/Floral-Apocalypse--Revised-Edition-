@@ -67,9 +67,13 @@ function preload() {/*
 
     imageSrc["meleeZombieIdle"] = [loadImage("Asset/Image/zombie/idle/0.png")];
     
-    imageSrc["meleeZombieAttackLeft"] = [loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/2.png"), loadImage("Asset/Image/zombie/attack/left/2.png")];
+    //imageSrc["meleeZombieAttackLeft"] = [loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/2.png"), loadImage("Asset/Image/zombie/attack/left/2.png")];
     
-    imageSrc["meleeZombieAttackRight"] = [loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/2.png"), loadImage("Asset/Image/zombie/attack/right/2.png")]
+    imageSrc["meleeZombieAttackLeft"] = [loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/2.png")];
+    
+    //imageSrc["meleeZombieAttackRight"] = [loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/2.png"), loadImage("Asset/Image/zombie/attack/right/2.png")];
+    
+    imageSrc["meleeZombieAttackRight"] = [loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/2.png")];
     
     imageSrc["meleeZombieDeath"] = [loadImage("Asset/Image/zombie/death/0.png"), loadImage("Asset/Image/zombie/death/1.png"), loadImage("Asset/Image/zombie/death/2.png"), loadImage("Asset/Image/zombie/death/3.png"), loadImage("Asset/Image/zombie/death/4.png"), loadImage("Asset/Image/zombie/death/5.png"), loadImage("Asset/Image/zombie/death/6.png"), loadImage("Asset/Image/zombie/death/7.png"), loadImage("Asset/Image/zombie/death/8.png"), loadImage("Asset/Image/zombie/death/9.png"), loadImage("Asset/Image/zombie/death/10.png"), ]
 

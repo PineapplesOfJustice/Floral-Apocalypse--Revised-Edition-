@@ -32,6 +32,7 @@ function Player(){
     this.roomId = null; 
     this.frameUpdate = 5; 
     this.animationStep = 0;
+    this.direction = "right";
     this.death = false;
     
     this.areaId = findAreaId(this.x, this.y, this.areaId);
@@ -89,6 +90,15 @@ Player.prototype.updateKinematic = function(){
         if(inputRight){
             speedX += movementSpeed;
         }
+        
+        if(Math.abs(speedX) > 0.5){
+            if(speedX < 0){
+                this.direction = "left";
+            }
+            else{
+                this.direction = "right";
+            }
+        }
 
         var kFactor = findProportionalFactor(speedX, speedY, movementSpeed);
         var velocityX = speedX * kFactor;
@@ -119,6 +129,32 @@ Player.prototype.updateKinematic = function(){
         this.x = width/2 - this.width/2 - cameraX;
         this.y = height/2 - this.height/2 - cameraY;
     }
+}
+Player.prototype.thingCollision = function(velocityX, velocityY){
+    var collision = {
+        x: false,
+        y: false,
+    }
+    var area = areas[this.areaId];
+    for(var thing of area.things){
+        if(collideRectRect(this.x+velocityX, this.y+this.height/2+velocityY, this.width, this.height/2, thing.x, thing.y, thing.width, thing.height)){
+            if(collideRectRect(this.x, this.y+this.height/2+velocityY, this.width, this.height/2, thing.x, thing.y, thing.width, thing.height)){
+                collision.y = true;
+            }
+            if(collideRectRect(this.x+velocityX, this.y+this.height/2, this.width, this.height/2, thing.x, thing.y, thing.width, thing.height)){
+                collision.x = true;
+            }
+            if(!collision.x && !collision.y){
+                if(Math.abs(velocityX) > Math.abs(velocityY)){
+                    collision.y = true;
+                }
+                else{
+                    collision.x = true;
+                }
+            }
+        }
+    }
+
 }
 Player.prototype.wallCollision = function(velocityX, velocityY){
     var collision = {
@@ -195,10 +231,7 @@ Player.prototype.getAnimationLabel = function(){
         if(this.sneaking){
             movementType = "Crouch";
         }
-        var movementDirection = "Right";
-        if(inputLeft && !inputRight){
-            movementDirection = "Left";
-        }
+        var movementDirection = capitalize(this.direction);
         return ("player" + movementType + movementDirection);
     }
 }
@@ -560,6 +593,7 @@ function Zombie(x, y, areaId, roomId, type){
     this.enemy = {};
     this.action = "motion";
     this.death = false;
+    this.direction = "right";
     this.frameUpdate = 5;
     this.animationStep = 0;
     
@@ -646,12 +680,22 @@ Zombie.prototype.updateKinematic = function(){
     if(this.aggravated){
         hypotenuse -= this.type.preferredDistanceFromEnemy;
         differenceX = hypotenuse * Math.cos(theta); 
-        differenceY = hypotenuse * Math.sin(theta); 
+        differenceY = hypotenuse * Math.sin(theta);
     }
     
     if(hypotenuse <= this.type.speed*speedModifier){ 
         this.x += differenceX;
         this.y += differenceY;
+        
+        if(Math.abs(differenceX) > 0.5){
+            if(differenceX < 0){
+                this.direction = "left";
+            }
+            else{
+                this.direction = "right";
+            }
+        }
+        
         if(roomDilemma){
             this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
         }
@@ -669,6 +713,15 @@ Zombie.prototype.updateKinematic = function(){
         }
     }
     else{
+        if(Math.abs(differenceX) > 0.5){
+            if(differenceX < 0){
+                this.direction = "left";
+            }
+            else{
+                this.direction = "right";
+            }
+        }
+        
         this.velocityX = (this.type.speed * speedModifier) * Math.cos(theta);
         this.velocityY = (this.type.speed * speedModifier) * Math.sin(theta);
         
@@ -806,7 +859,7 @@ Zombie.prototype.wallCollision = function(velocityX, velocityY){
                                 collision.x = true;
                             }
                             if(!collision.x && !collision.y){
-                                if(velocityX > velocityY){
+                                if(Math.abs(velocityX) > Math.abs(velocityY)){
                                     collision.y = true;
                                 }
                                 else{
@@ -838,7 +891,7 @@ Zombie.prototype.wallCollision = function(velocityX, velocityY){
                             }
                         }
                         if(!collision.x && !collision.y){
-                            if(velocityX > velocityY){
+                            if(Math.abs(velocityX) > Math.abs(velocityY)){
                                 collision.y = true;
                             }
                             else{
@@ -873,7 +926,7 @@ Zombie.prototype.zombieCollision = function(velocityX, velocityY){
                     }
                 }
                 if(!collision.x && !collision.y){
-                    if(velocityX > velocityY){
+                    if(Math.abs(velocityX) > Math.abs(velocityY)){
                         collision.y = true;
                     }
                     else{
@@ -956,10 +1009,7 @@ Zombie.prototype.getAnimationLabel = function(){
         return (this.type.tag + "Idle");
     }
     else{
-        var direction = "Right";
-        if(this.velocityX < 0){
-            direction = "Left";
-        }
+        var direction = capitalize(this.direction);
         var action = "Walk";
         if(this.action == "attack"){
             action = "Attack";
@@ -989,7 +1039,7 @@ function MeleeZombie(){
     this.preferredDistanceFromEnemy = 7;
     
     this.idleLocationMaxDistance = 250;
-    this.damage = 7;
+    this.damage = 1;
     this.tag = "meleeZombie";
 }
 MeleeZombie.prototype.attack = function(enemy){
@@ -1100,7 +1150,7 @@ function soundWave(x, y, intensity, radius, areaId, roomId){
     this.y = y;
     this.intensity = intensity;
     this.radius = radius;
-    this.radiusExpansionSpeed = 12;
+    this.radiusExpansionSpeed = 15;
     this.areaId = areaId;
     this.roomId = roomId;
     this.zombiePinged = [];
@@ -1114,7 +1164,7 @@ soundWave.prototype.show = function(){
     if(this.zombiePinged.length > 0){
         stroke(255, 100, 0, 150);
     }
-    var currentStrokeWeight = this.intensity/this.radius*50;
+    var currentStrokeWeight = this.intensity/this.radius*40;
     strokeWeight(currentStrokeWeight);
     ellipse(this.x, this.y, this.radius, this.radius);
 }
@@ -1285,10 +1335,13 @@ function findAreaId(x, y, areaId){
     }
 }
 
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 
 //Draggable Tutorial
 
-var dragObject = null;
 var tutorialActive = false;
 var tutorialSlide = 1;
 var gameOverScreen = false;
@@ -1352,11 +1405,6 @@ function displayTutorialSpace(){
     tutorialSlide = 1;  
     tutorialContent();
     tutorialActive = true;
-    if(dragObject != null){
-        dragObject.parent.isDragged = false;
-        dragObject.parent.isSnake = true;
-        dragObject = null;
-    }
     gameActive = false;
     noLoop();
 }
@@ -1364,7 +1412,9 @@ function displayTutorialSpace(){
 function hideTutorialSpace(){
     document.getElementById("tutorialSpace").setAttribute("style", "display: none;");
     if(!gameOverScreen){
-        gameActive = true;
+        setTimeout(function(){
+            gameActive = true;
+        }, 100);
     }
     tutorialActive = false;
     loop();
@@ -1372,7 +1422,7 @@ function hideTutorialSpace(){
 
 function tutorialContent(){
     if(tutorialSlide == 1){
-        document.getElementById("tutorialText").innerHTML = "<p style='text-indent: 50px;'>On the 4th day of the 5th month of 2035, a normal night on a normal day seemed to have something amiss. Overnight, all the rose bushes in the world had suddenly grown to enormous heights. With their new growth, they gained a weird toxin which began to spread to the humans of the world. Many people fell victim to the infectious toxin and turned into mutated rose zombies. The few humans that weren’t affected now survive in the wasteland that is Earth, against the ever increasing amount of rose zombies.</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
+        document.getElementById("tutorialText").innerHTML = "<p style='text-indent: 50px;'>On the 4th day of the 5th month of 2035th year, a world disaster arises. Overnight, every rose bushes of the blue world had suddenly grown to enormous heights. With their unearthly growth, they developed a bizarre toxin which began to propagate within the humans of the world. Many fell victim to the infectious toxin, but death did not embraces them. The toxin reanimated their bodies into mutated rose zombies. The few humans that weren’t affected now survive in the wasteland that is Earth, against the ever increasing amount of rose zombies.</p><button class='nextButton' onclick='displayNextSlide()'>Next: <i class='arrow right'></i></button>"; 
         document.getElementById("tutorialSpaceHeader").innerHTML = "Background";
     }
     else if(tutorialSlide == 2){

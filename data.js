@@ -58,7 +58,7 @@ function addGameContent(){
             room6.addEntrance("bottom", null);
             areas[0].rooms.push(room6);
 
-        var zombie0 = new Zombie(50, 100, 0, null, new MeleeZombie());
+        var zombie0 = new Zombie(100, 100, 0, null, new MeleeZombie());
             areas[0].zombies.push(zombie0);
         var zombie1 = new Zombie(150, -400, 0, null, new MeleeZombie());
             areas[0].zombies.push(zombie1);
@@ -70,12 +70,12 @@ function addGameContent(){
             areas[0].zombies.push(zombie4);
         var zombie5 = new Zombie(750, -350, 0, null, new MeleeZombie());
             areas[0].zombies.push(zombie5);
-        var zombie6 = new Zombie(900, 400, 0, null, new MeleeZombie());
+        var zombie6 = new Zombie(900, 450, 0, null, new MeleeZombie());
             areas[0].zombies.push(zombie6);
         var zombie7 = new Zombie(1200, 100, 0, null, new MeleeZombie());
             areas[0].zombies.push(zombie7);
     
-        var thing0 = new Cabinet(550, 550, "Nothing! Life isn't fair.", 0);
+        var thing0 = new Cabinet(450, 550, "Nothing! Life isn't fair.", 0);
             areas[0].things.push(thing0);
     
     

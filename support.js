@@ -30,13 +30,12 @@ function Player(){
     };
     this.areaId = 0;
     this.roomId = null; 
-    this.frameUpdate = 2; 
+    this.frameUpdate = 5; 
     this.animationStep = 0;
     this.death = false;
     
     this.areaId = findAreaId(this.x, this.y, this.areaId);
     this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
-    console.log(this.areaId, this.roomId)
 }
 Player.prototype.updateGun = function(){
     this.aimX = mouseX - cameraX;
@@ -108,7 +107,7 @@ Player.prototype.updateKinematic = function(){
         }
 
         if(speedX != 0 || speedY != 0){
-            if(this.animationStep == imageSrc[this.getAnimationLabel()].length){
+            if(this.animationStep == imageSrc[this.getAnimationLabel()].length && frameCount % this.frameUpdate == 0){
                 soundWaves.push(new soundWave(this.x+this.width/2, this.y+this.height/2, this.sneakModifier*randomNumber(15,25), 1, this.areaId, this.roomId));
             }
             this.motion = true;
@@ -140,7 +139,7 @@ Player.prototype.wallCollision = function(velocityX, velocityY){
         }
 
         for(var entrance of area.entrances){
-            if(entrance.requirement != null && collideRectRect(this.x, this.y, this.width, this.height, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
+            if(entrance.requirement != null && collideRectRect(this.x+velocityX, this.y+velocityY, this.width, this.height, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
                 for(var block of entrance.blocks){
                     if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
                         collision.y = true;
@@ -153,7 +152,7 @@ Player.prototype.wallCollision = function(velocityX, velocityY){
         }
 
         for(var room of area.rooms){
-            if(collideRectRect(this.x, this.y, this.width, this.height, room.x, room.y, room.width, room.height)){
+            if(collideRectRect(this.x+velocityX, this.y+velocityY, this.width, this.height, room.x, room.y, room.width, room.height)){
                 for(var direction in room.blocks){
                     for(var block of room.blocks[direction]){
                         if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
@@ -169,7 +168,7 @@ Player.prototype.wallCollision = function(velocityX, velocityY){
     }
     else{
         var room = areas[this.areaId].rooms[this.roomId];
-        if(collideRectRect(this.x, this.y, this.width, this.height, room.x, room.y, room.width, room.height)){
+        if(collideRectRect(this.x+velocityX, this.y+velocityY, this.width, this.height, room.x, room.y, room.width, room.height)){
             for(var direction in room.blocks){
                 for(var block of room.blocks[direction]){
                     if(collideRectRect(this.x, this.y+velocityY, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
@@ -212,7 +211,7 @@ Player.prototype.showHpBar = function(){
     stroke("black");
     strokeWeight(2);
     rect(this.x, this.y-10, this.width, 5);
-    fill("red")
+    fill("green");
     rect(this.x, this.y-10, hpWidth, 5);
 }
 Player.prototype.show = function(){
@@ -561,7 +560,7 @@ function Zombie(x, y, areaId, roomId, type){
     this.enemy = {};
     this.action = "motion";
     this.death = false;
-    this.frameUpdate = 2;
+    this.frameUpdate = 5;
     this.animationStep = 0;
     
     this.roomId = findRoomId(x, y, areaId, roomId);
@@ -593,7 +592,7 @@ Zombie.prototype.updateKinematic = function(){
                     }
                 }
             }
-            if(!chosenEntrance){
+            if(chosenEntrance  == false){
                 var differenceX = this.enemy.x - this.x;
                 var differenceY = this.enemy.y - this.y;
             }
@@ -678,7 +677,10 @@ Zombie.prototype.updateKinematic = function(){
             collision = this.zombieCollision(this.velocityX, this.velocityY);
         }
         
-        if(!collision.x){
+        if(!collision.x && !collision.y){
+            
+        }
+        else if(!collision.x){
             this.velocityX = (this.type.speed * speedModifier) * posNeg(this.velocityX);
             this.velocityY = 0;
         }
@@ -690,7 +692,6 @@ Zombie.prototype.updateKinematic = function(){
             this.velocityX = 0;
             this.velocityY = 0;
         }
-        
         this.x += this.velocityX;
         this.y += this.velocityY;
         this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
@@ -714,7 +715,7 @@ Zombie.prototype.updateRoomId = function(){
 Zombie.prototype.updateIdlePosition = function(){
     var mustRelocate = false;
     var theta = Math.random()*TWO_PI;
-    var distance = (Math.random()*(this.type.idleLocationMaxDistance-100))+100;
+    var distance = (Math.random()*(this.type.idleLocationMaxDistance-50))+50;
     var idleLocationX = this.x + distance * Math.cos(theta);
     var idleLocationY = this.y + distance * Math.sin(theta);
     if(!mustRelocate && this.roomId != findRoomId(idleLocationX, idleLocationY, this.areaId, this.roomId)){
@@ -722,7 +723,7 @@ Zombie.prototype.updateIdlePosition = function(){
     }
     if(!mustRelocate){
         var collision = this.wallCollision(distance*Math.cos(theta), distance*Math.sin(theta));
-        if(collision.x){
+        if(collision.x || collision.y){
             mustRelocate = true;
         }
     }
@@ -781,7 +782,7 @@ Zombie.prototype.wallCollision = function(velocityX, velocityY){
         }
 
         for(var entrance of area.entrances){
-            if(entrance.requirement != null && collideRectRect(this.x, this.y, this.type.width, this.type.height, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
+            if(entrance.requirement != null && collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
                 for(var block of entrance.blocks){
                     if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
                         collision.y = true;
@@ -794,14 +795,24 @@ Zombie.prototype.wallCollision = function(velocityX, velocityY){
         }
     
         for(var room of area.rooms){
-            if(collideRectRect(this.x, this.y, this.type.width, this.type.height, room.x, room.y, room.width, room.height)){
+            if(collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, room.x, room.y, room.width, room.height)){
                 for(var direction in room.blocks){
                     for(var block of room.blocks[direction]){
-                        if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
-                            collision.y = true;
-                        }
-                        if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
-                            collision.x = true;
+                        if(collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                            if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                                collision.y = true;
+                            }
+                            if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                                collision.x = true;
+                            }
+                            if(!collision.x && !collision.y){
+                                if(velocityX > velocityY){
+                                    collision.y = true;
+                                }
+                                else{
+                                    collision.x = true;
+                                }
+                            }
                         }
                     }
                 }
@@ -809,15 +820,31 @@ Zombie.prototype.wallCollision = function(velocityX, velocityY){
         }
     }
     else{
-        var room = areas[this.areaId].rooms[this.roomId];
-        if(collideRectRect(this.x, this.y, this.type.width, this.type.height, room.x, room.y, room.width, room.height)){
+        var room = area.rooms[this.roomId];
+        if(collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, room.x, room.y, room.width, room.height)){
             for(var direction in room.blocks){
                 for(var block of room.blocks[direction]){
-                    if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
-                        collision.y = true;
-                    }
-                    if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
-                        collision.x = true;
+                    if(collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                        if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                            collision.y = true;
+                            while(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                                this.y -= posNeg(velocityY);
+                            }
+                        }
+                        if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                            collision.x = true;
+                            while(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
+                                this.x -= posNeg(velocityX);
+                            }
+                        }
+                        if(!collision.x && !collision.y){
+                            if(velocityX > velocityY){
+                                collision.y = true;
+                            }
+                            else{
+                                collision.x = true;
+                            }
+                        }
                     }
                 }
             }
@@ -832,11 +859,27 @@ Zombie.prototype.zombieCollision = function(velocityX, velocityY){
     }
     for(var zombie of areas[this.areaId].zombies){
         if(zombie != this){
-            if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
-                collision.y = true;
-            }
-            if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
-                collision.x = true;
+            if(collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                    collision.y = true;
+                    while(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                        this.y -= posNeg(velocityY);
+                    }
+                }
+                if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                    collision.x = true;
+                    while(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                        this.x -= posNeg(velocityX);
+                    }
+                }
+                if(!collision.x && !collision.y){
+                    if(velocityX > velocityY){
+                        collision.y = true;
+                    }
+                    else{
+                        collision.x = true;
+                    }
+                }
             }
         }
     }
@@ -850,11 +893,14 @@ Zombie.prototype.playerCollision = function(){
 Zombie.prototype.showHpBar = function(){
     if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.type.width, this.type.height)){
         var hpWidth = map(this.hp, 0, this.type.maxHp, 0, this.type.width);
+        if(hpWidth < 0){
+            hpWidth = 0;
+        }
         noFill();
         stroke("black");
         strokeWeight(1);
         rect(this.x, this.y+this.type.height+5, this.type.width, 5);
-        fill("green");
+        fill("red");
         rect(this.x, this.y+this.type.height+5, hpWidth, 5);
     }
 }
@@ -865,11 +911,21 @@ Zombie.prototype.show = function(){
         if(frameCount % this.frameUpdate == 0){
             this.animationStep += 1;
         }
-        if(this.animationStep == imageSrc[animationLabel].length){
+        if(this.animationStep >= imageSrc[animationLabel].length){
             this.animationStep = 0;
         }
 
         image(imageSrc[animationLabel][this.animationStep], this.x, this.y, this.type.width, this.type.height);
+        /*
+        if(collidePointRect(mouseX-cameraX, mouseY-cameraY, this.x, this.y, this.type.width, this.type.height)){
+            textAlign(LEFT, BOTTOM);
+            fill("white")
+            stroke("black")
+            strokeWeight(1);
+            textSize(15);
+            text("x: " + this.x, mouseX - cameraX + 10, mouseY - cameraY - 10);
+            text("y: " + this.y, mouseX - cameraX + 10, mouseY - cameraY + 10);
+        }*/
 
         //fill("purple");
         //rect(this.x, this.y, this.type.width, this.type.height);
@@ -920,9 +976,9 @@ Zombie.prototype.showThreatZone = function(){
 }
 
 function MeleeZombie(){
-    this.maxHp = 0;
-    this.width = 40;
-    this.height = 50;
+    this.maxHp = 20;
+    this.width = 1080/30;
+    this.height = 2057/30;
     this.speed = 3.5;
     this.soundThreshold = 100;
     this.lineOfSight = {
@@ -965,7 +1021,7 @@ function Investigation(x, y, roomId, curiousLevel){
 function Projectile(x, y, velocityX, velocityY, damage, type, areaId){
     this.x = x;
     this.y = y;
-    this.size = 5;
+    this.size = 10;
     this.velocityX = velocityX;
     this.velocityY = velocityY;
     this.damage = damage;
@@ -1009,7 +1065,7 @@ Projectile.prototype.wallCollision = function(){
     for(var entrance of area.entrances){
         if((entrance.type == "area" || entrance.requirement != null) && collideRectRect(this.x, this.y, this.size, this.size, entrance.x-entrance.width/2, entrance.y-entrance.height/2, entrance.width, entrance.height)){
             for(var block of entrance.blocks){
-                if(collideRectRect(this.x, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
+                if(collideRectRect(this.x, this.y, this.size, this.size, block.x, block.y, block.blockSize, block.blockSize)){
                     return true;
                 }
             }
@@ -1020,7 +1076,7 @@ Projectile.prototype.wallCollision = function(){
         if(collideRectRect(this.x, this.y, this.size, this.size, room.x, room.y, room.width, room.height)){
             for(var direction in room.blocks){
                 for(var block of room.blocks[direction]){
-                    if(collideRectRect(this.x, this.y, this.width, this.height, block.x, block.y, block.blockSize, block.blockSize)){
+                    if(collideRectRect(this.x, this.y, this.size, this.size, block.x, block.y, block.blockSize, block.blockSize)){
                         return true;
                     }
                 }
@@ -1099,8 +1155,8 @@ Sign.prototype.interact = function(){
 function Cabinet(x, y, contents, areaId){
     this.x = x;
     this.y = y;
-    this.width = 100;
-    this.height = 50;
+    this.width = 108;
+    this.height = 63.5;
     this.contents = contents;
     this.type = "cabinet"
     this.open = false;

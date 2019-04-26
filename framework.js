@@ -1,6 +1,6 @@
 // Game Setup
 
-function preload() {
+function preload() {/*
     soundSrc["soundtrack"] = loadSound('Asset/Music/Ambient/Shadowlands 3 - Machine.mp3');
     soundSrc["soundtrack1"] = loadSound('Asset/Music/Combat/Mistake the Getaway.mp3')
     soundSrc["soundtrack2"] = loadSound('Asset/Music/Other/Serpentine Trek.mp3')
@@ -40,7 +40,7 @@ function preload() {
     soundSrc["zombiesound17"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (21).wav')
     soundSrc["zombiesound18"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (23).wav')
     soundSrc["zombiesound19"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (24).wav')
-    soundSrc["zombiesound20"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (25).wav')
+    soundSrc["zombiesound20"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (25).wav')*/
     
     fontSrc["chakraPetch"] = loadFont("Asset/Font/ChakraPetch-Medium.ttf");
     fontSrc["fellEnglish"] = loadFont("Asset/Font/Fell English.ttf");
@@ -49,9 +49,9 @@ function preload() {
 
     imageSrc["playerWalkRight"] = [loadImage("Asset/Image/player/walk/right/0.png"), loadImage("Asset/Image/player/walk/right/1.png"), loadImage("Asset/Image/player/walk/right/2.png"), loadImage("Asset/Image/player/walk/right/3.png"), loadImage("Asset/Image/player/walk/right/4.png"), loadImage("Asset/Image/player/walk/right/5.png"), loadImage("Asset/Image/player/walk/right/6.png"), loadImage("Asset/Image/player/walk/right/7.png")];
 
-    imageSrc["playerCrouchLeft"] = [loadImage("Asset/Image/player/crouch/left/0.png"), loadImage("Asset/Image/player/crouch/left/1.png"), loadImage("Asset/Image/player/crouch/left/2.png"), loadImage("Asset/Image/player/crouch/left/3.png"), loadImage("Asset/Image/player/crouch/left/4.png")];
+    imageSrc["playerCrouchLeft"] = [loadImage("Asset/Image/player/crouch/left/0.png"), loadImage("Asset/Image/player/crouch/left/0.png"), loadImage("Asset/Image/player/crouch/left/1.png"), loadImage("Asset/Image/player/crouch/left/1.png"), loadImage("Asset/Image/player/crouch/left/2.png"), loadImage("Asset/Image/player/crouch/left/2.png"), loadImage("Asset/Image/player/crouch/left/3.png"), loadImage("Asset/Image/player/crouch/left/3.png"), loadImage("Asset/Image/player/crouch/left/4.png"), loadImage("Asset/Image/player/crouch/left/4.png")];
 
-    imageSrc["playerCrouchRight"] = [loadImage("Asset/Image/player/crouch/right/0.png"), loadImage("Asset/Image/player/crouch/right/1.png"), loadImage("Asset/Image/player/crouch/right/2.png"), loadImage("Asset/Image/player/crouch/right/3.png"), loadImage("Asset/Image/player/crouch/right/4.png")];
+    imageSrc["playerCrouchRight"] = [loadImage("Asset/Image/player/crouch/right/0.png"), loadImage("Asset/Image/player/crouch/right/0.png"), loadImage("Asset/Image/player/crouch/right/1.png"), loadImage("Asset/Image/player/crouch/right/1.png"), loadImage("Asset/Image/player/crouch/right/2.png"), loadImage("Asset/Image/player/crouch/right/2.png"), loadImage("Asset/Image/player/crouch/right/3.png"), loadImage("Asset/Image/player/crouch/right/3.png"), loadImage("Asset/Image/player/crouch/right/4.png"), loadImage("Asset/Image/player/crouch/right/4.png")];
 
     imageSrc["playerIdle"] = [loadImage("Asset/Image/player/idle/0.png"), loadImage("Asset/Image/player/idle/1.png"), loadImage("Asset/Image/player/idle/2.png"), loadImage("Asset/Image/player/idle/3.png"), loadImage("Asset/Image/player/idle/4.png"), loadImage("Asset/Image/player/idle/5.png"), loadImage("Asset/Image/player/idle/6.png")];
     
@@ -67,9 +67,9 @@ function preload() {
 
     imageSrc["meleeZombieIdle"] = [loadImage("Asset/Image/zombie/idle/0.png")];
     
-    imageSrc["meleeZombieAttackLeft"] = [loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/2.png")];
+    imageSrc["meleeZombieAttackLeft"] = [loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/0.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/1.png"), loadImage("Asset/Image/zombie/attack/left/2.png"), loadImage("Asset/Image/zombie/attack/left/2.png")];
     
-    imageSrc["meleeZombieAttackRight"] = [loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/2.png")]
+    imageSrc["meleeZombieAttackRight"] = [loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/0.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/1.png"), loadImage("Asset/Image/zombie/attack/right/2.png"), loadImage("Asset/Image/zombie/attack/right/2.png")]
     
     imageSrc["meleeZombieDeath"] = [loadImage("Asset/Image/zombie/death/0.png"), loadImage("Asset/Image/zombie/death/1.png"), loadImage("Asset/Image/zombie/death/2.png"), loadImage("Asset/Image/zombie/death/3.png"), loadImage("Asset/Image/zombie/death/4.png"), loadImage("Asset/Image/zombie/death/5.png"), loadImage("Asset/Image/zombie/death/6.png"), loadImage("Asset/Image/zombie/death/7.png"), loadImage("Asset/Image/zombie/death/8.png"), loadImage("Asset/Image/zombie/death/9.png"), loadImage("Asset/Image/zombie/death/10.png"), ]
 
@@ -82,7 +82,7 @@ function preload() {
     //imageSrc["roadHorizontal"] = loadImage("Asset/Image/miscellaneous/Mossy & Cracked Road.png");
     //imageSrc["roadVertical"] = loadImage("Asset/Image/miscellaneous/Mossy & Cracked Road Vertical.png");
 
-    imageSrc["tree"] = [loadImage("Asset/Image/miscellaneous/tree/0.png"), loadImage("Asset/Image/miscellaneous/tree/1.png"), loadImage("Asset/Image/miscellaneous/tree/2.png"), loadImage("Asset/Image/miscellaneous/tree/3.png"), loadImage("Asset/Image/miscellaneous/tree/4.png"), loadImage("Asset/Image/miscellaneous/tree/5.png"), loadImage("Asset/Image/miscellaneous/tree/6.png"), loadImage("Asset/Image/miscellaneous/tree/7.png"), loadImage("Asset/Image/miscellaneous/tree/8.png"), loadImage("Asset/Image/miscellaneous/tree/9.png"), loadImage("Asset/Image/miscellaneous/tree/10.png"), loadImage("Asset/Image/miscellaneous/tree/11.png"), loadImage("Asset/Image/miscellaneous/tree/12.png"), loadImage("Asset/Image/miscellaneous/tree/13.png"), loadImage("Asset/Image/miscellaneous/tree/14.png"), loadImage("Asset/Image/miscellaneous/tree/15.png"), loadImage("Asset/Image/miscellaneous/tree/16.png"), loadImage("Asset/Image/miscellaneous/tree/17.png"), loadImage("Asset/Image/miscellaneous/tree/18.png")];
+    //imageSrc["tree"] = [loadImage("Asset/Image/miscellaneous/tree/0.png"), loadImage("Asset/Image/miscellaneous/tree/1.png"), loadImage("Asset/Image/miscellaneous/tree/2.png"), loadImage("Asset/Image/miscellaneous/tree/3.png"), loadImage("Asset/Image/miscellaneous/tree/4.png"), loadImage("Asset/Image/miscellaneous/tree/5.png"), loadImage("Asset/Image/miscellaneous/tree/6.png"), loadImage("Asset/Image/miscellaneous/tree/7.png"), loadImage("Asset/Image/miscellaneous/tree/8.png"), loadImage("Asset/Image/miscellaneous/tree/9.png"), loadImage("Asset/Image/miscellaneous/tree/10.png"), loadImage("Asset/Image/miscellaneous/tree/11.png"), loadImage("Asset/Image/miscellaneous/tree/12.png"), loadImage("Asset/Image/miscellaneous/tree/13.png"), loadImage("Asset/Image/miscellaneous/tree/14.png"), loadImage("Asset/Image/miscellaneous/tree/15.png"), loadImage("Asset/Image/miscellaneous/tree/16.png"), loadImage("Asset/Image/miscellaneous/tree/17.png"), loadImage("Asset/Image/miscellaneous/tree/18.png")];
 
     imageSrc["hitmarker"] = [loadImage("Asset/Image/miscellaneous/hitmarker/0.png"), loadImage("Asset/Image/miscellaneous/hitmarker/1.png")];
 
@@ -213,6 +213,7 @@ function draw() {
                     else if(current.action == "attack"){
                         current.type.attack(current.enemy);
                     }
+                    current.showHpBar();
                     var deathAnimationFinish = current.show();
                     if(deathAnimationFinish){
                         areas[player.areaId].zombies.splice(z, 1);
@@ -361,7 +362,8 @@ function mouseClicked() {
             var kFactor = findProportionalFactor(differenceX, differenceY, player.gun.speed);
             var velocityX = differenceX * kFactor;
             var velocityY = differenceY * kFactor;
-            projectiles.push(new Projectile(player.barrell.x, player.barrell.y, velocityX, velocityY, player.gun.damage, "player", player.areaId));
+            //projectiles.push(new Projectile(player.barrell.x, player.barrell.y, velocityX, velocityY, player.gun.damage, "player", player.areaId));
+            projectiles.push(new Projectile(player.x+player.width/2, player.y+player.height/2, velocityX, velocityY, player.gun.damage, "player", player.areaId));
             //player.gun.ammo -= 1;
             player.gun.cycle = true;
             setTimeout(function(){

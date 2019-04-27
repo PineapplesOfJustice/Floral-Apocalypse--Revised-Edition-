@@ -137,10 +137,9 @@ Player.prototype.updateKinematic = function(){
 
         cameraX -= velocityX;
         cameraY -= velocityY;
-
-        this.x = width/2 - this.width/2 - cameraX;
-        this.y = height/2 - this.height/2 - cameraY;
     }
+    this.x = width/2 - this.width/2 - cameraX;
+    this.y = height/2 - this.height/2 - cameraY;
 }
 Player.prototype.thingCollision = function(velocityX, velocityY){
     var collision = {
@@ -232,7 +231,7 @@ Player.prototype.wallCollision = function(velocityX, velocityY){
     return collision;
 }
 Player.prototype.getAnimationLabel = function(){
-    if(this.death){
+    if(this.death || this.death == null){
         return "playerDeath";
     }
     else if(!this.motion){
@@ -252,7 +251,7 @@ Player.prototype.showHpBar = function(){
     if(hpWidth < 0){
         hpWidth = 0;
     }
-    noFill();
+    fill(255, 100);
     stroke("black");
     strokeWeight(2);
     rect(this.x, this.y-10, this.width, 5);
@@ -267,7 +266,10 @@ Player.prototype.show = function(){
     if(this.death && this.animationStep >= imageSrc[animationLabel].length){
         return true;
     }
-    if(this.animationStep >= imageSrc[animationLabel].length){
+    else if(this.death == null && this.animationStep >= imageSrc[animationLabel].length-1){
+        this.animationStep = imageSrc[animationLabel].length-1;
+    }
+    else if(this.animationStep >= imageSrc[animationLabel].length){
         this.animationStep = 0;
     }
     image(imageSrc[animationLabel][this.animationStep], this.x, this.y, this.width, this.height);
@@ -964,7 +966,7 @@ Zombie.prototype.showHpBar = function(){
         if(hpWidth < 0){
             hpWidth = 0;
         }
-        noFill();
+        fill(255, 100);
         stroke("black");
         strokeWeight(1);
         rect(this.x, this.y+this.type.height+5, this.type.width, 5);
@@ -1060,7 +1062,7 @@ function MeleeZombie(){
     this.preferredDistanceFromEnemy = 7;
     
     this.idleLocationMaxDistance = 250;
-    this.damage = 1;
+    this.damage = 3;
     this.tag = "meleeZombie";
 }
 MeleeZombie.prototype.attack = function(enemy){

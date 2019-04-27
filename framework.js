@@ -107,9 +107,6 @@ function setup() {
     soundWaves = [];
     projectiles = [];
     
-    restartRadiusc = findHypotenuse(width/2, height/2);
-    restartSeparateX = 0;
-    
     addGameContent();
 }
 
@@ -183,11 +180,28 @@ function draw() {
             }
         }
         
+        if(gameOverScreen){
+            fill("white")
+            strokeWeight(3);
+            stroke("black")
+            textAlign(CENTER, CENTER);
+            textFont(fontSrc["chakraPetch"]);
+            textSize(80);
+            text("Game Over", width/2-cameraX, height/3-cameraY)
+
+            if(sin(frameCount*0.05) > -0.64){
+                textSize(20);
+                text("Press R to Restart", width/2-cameraX, height*5/8-cameraY); 
+            }
+        }
+        
         player.areaId = findAreaId(player.x,player.y, player.areaId);
         player.roomId = findRoomId(player.x,player.y, player.areaId, player.roomId);
         player.updateKinematic();
         player.updateGun();
-        player.showHpBar();
+        if(player.death == false){
+            player.showHpBar();
+        }
         
         if(player.death){
             var deathAnimationFinish = false;
@@ -237,62 +251,59 @@ function draw() {
         }
     }
     else if(gameOverScreen){
-        fill(0, 55+sin(frameCount*0.05)*25);
-        noStroke();
-        rect(-cameraX, -cameraY, width, height);
+        //fill(0, 55+sin(frameCount*0.05)*25);
+        //noStroke();
+        //rect(-cameraX, -cameraY, width, height);
         
-        fill("white")
-        stroke(3);
-        stroke("black")
-        textAlign(CENTER, CENTER);
-        textFont(fontSrc["chakraPetch"]);
-        textSize(80);
-        text("Game Over", width/2-cameraX, height/3-cameraY)
-        
-        if(sin(frameCount*0.05) > -0.64){
-            textSize(20);
-            text("Press R to Restart", width/2-cameraX, height/2-cameraY); 
-        }
+        noFill();
+        stroke(0, 150+sin(frameCount*0.05)*35);
+        var borderWeight = findHypotenuse(width, height);
+        strokeWeight(borderWeight);
+        ellipse(width/2 - cameraX, height/2 - cameraY, width, height);
     }
     if(restartScreen){
-        if(restartRadius > 0){
-            restartRadius -= restartSpeed;
-            if(restartRadius <= 0){
-                gameReInitiation();
+        var maxRadius = findHypotenuse(width, height);
+        if(restartRadius < maxRadius/2){
+            restartRadius += restartSpeed;
+            if(restartRadius >= maxRadius/2){
+                restartRadius = maxRadius/2;
             }
-            else{
-                noFill();
-                stroke("black");
-                strokeWeight(findHypotenuse(width/2, height/2) - restartRadius);
-                ellipse(width/2, height/2, restartRadius, restartRadius);
+            noFill();
+            stroke("black");
+            strokeWeight(restartRadius);
+            ellipse(width/2 - cameraX, height/2 - cameraY, maxRadius - restartRadius, maxRadius - restartRadius);
+            if(restartRadius >= maxRadius/2){
+                gameReInitiation();
             }
         }
         else{
             if(restartSeparateX < width){
-                restartSeparateX += restartSpeed;
+                restartSeparateX += restartSpeed*5;
                 if(restartSeparateX > width){
                     restartSeparateX = width;
                 }
             }
             else if(restartSeparateY < height){
-                restartSeparateY += restartSpeed;
+                restartSeparateY += restartSpeed*2;
                 if(restartSeparateY >= height){
                     restartSeparateY = height;
                     restartGame();
                 }
             }
+            fill("black");
+            noStroke();
             beginShape();
-            vertex(0, 0);
-            vertex(width/2, 0);
-            vertex(width/2 - restartSeparateX/2, height - restartSeparateY);
-            vertex(0, height - restartSeparateY);
+            vertex(-cameraX, -cameraY);
+            vertex(width/2 - cameraX, -cameraY);
+            vertex(width/2 - cameraX - restartSeparateX/2, height - cameraY - restartSeparateY);
+            vertex(-cameraX, height - cameraY - restartSeparateY);
             endShape();
             
             beginShape();
-            vertex(width, 0);
-            vertex(width/2, 0);
-            vertex(width/2 + restartSeparateX/2, height - restartSeparateY);
-            vertex(width, height - restartSeparateY);
+            vertex(width - cameraX, -cameraY);
+            vertex(width/2 - cameraX, -cameraY);
+            vertex(width/2 - cameraX + restartSeparateX/2, height - cameraY - restartSeparateY);
+            vertex(width - cameraX, height - cameraY - restartSeparateY);
             endShape();
         }
     }
@@ -309,20 +320,32 @@ function deathAnimation() {
     inputDown = false; 
     inputLeft = false;
     inputRight = false;
+    
+    var currentWidth = player.width;
+    var currentHeight = player.height;
+    
+    player.width = 90;
+    player.height = 51;
+    player.x = player.x + currentWidth/2 - player.width/2;
+    player.y = player.x + currentHeight/2 - player.height/2;
+    player.updateKinematic();
 }
 
 function gameOverAnimation() {
     gameOverScreen = true;
+    player.death = null;
 }
 
 function restartAnimation() {
     restartScreen = true;
-    gameActive = false;
+    //gameActive = false;
     playerActive = false;
     inputUp = false;
     inputDown = false; 
     inputLeft = false;
     inputRight = false;
+    
+    console.log("restart")
 }
 
 function gameReInitiation() {
@@ -332,21 +355,31 @@ function gameReInitiation() {
     projectiles = [];
     milestone = {};
     
+    //cameraX = 0;
+    //cameraY = -500;
+    
     cameraX = 0;
     cameraY = -500;
-    player = new Player(275, 280);
-    
     gameOverScreen = false;
-    playerActive = true;
+    playerActive = false;
     addGameContent();
+    player = new Player();
+    
+    console.log("reinitiation")
 }
 
 function restartGame() {
+    gameOverScreen = false;
     restartScreen = false;
-    gameActive = true;
+    //gameActive = true;
+    playerActive = true;
+    //player = new Player(275, 280);
     
-    restartRadius = findHypotenuse(width/2, height/2);
+    restartRadius = 0;
     restartSeparateX = 0; 
+    restartSeparateY = 0; 
+    
+    console.log("truerestart")
 }
 
 

@@ -9,9 +9,10 @@ var titleScreen = true;
 var gameOverScreen = false;
 var restartScreen = false;
 
-var restartRadius;
-var restartSeparateX;
-var restartSpeed = 5;
+var restartRadius = 0;
+var restartSeparateX = 0;
+var restartSeparateY = 0;
+var restartSpeed = 10;
 
 var areas = [];
 var soundWaves = [];

@@ -31,13 +31,20 @@ canvas {
     border-style: solid;
 }
 
-#p5_loading {
+#p5_loading p {
     font-family: Chakra Petch;
-    font-size: 60px;
+    font-size: 7vh;
     text-decoration: underline;
     text-shadow: -2px -1px 5px black;
     color: white;    
     text-align: center;
+}
+
+#p5_loading img {
+    height: 150vh;
+    width: auto;
+    margin: auto;
+    display: block;
 }
 
 h1 {

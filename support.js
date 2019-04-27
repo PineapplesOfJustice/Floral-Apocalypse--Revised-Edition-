@@ -115,9 +115,21 @@ Player.prototype.updateKinematic = function(){
             }
             //wall Sound;
         }
+        else{
+            collision = this.thingCollision(velocityX, velocityY);
+            if(collision.x || collision.y){
+                if(collision.x){
+                    velocityX = 0;
+                }
+                if(collision.y){
+                    velocityY = 0;
+                }
+                //wall Sound;
+            }
+        }
 
         if(speedX != 0 || speedY != 0){
-            if(this.animationStep == imageSrc[this.getAnimationLabel()].length && frameCount % this.frameUpdate == 0){
+            if((this.animationStep == imageSrc[this.getAnimationLabel()].length || this.animationStep == Math.floor(imageSrc[this.getAnimationLabel()].length)/2) && frameCount % this.frameUpdate == 0){
                 soundWaves.push(new soundWave(this.x+this.width/2, this.y+this.height/2, this.sneakModifier*randomNumber(15,25), 1, this.areaId, this.roomId));
             }
             this.motion = true;
@@ -137,11 +149,11 @@ Player.prototype.thingCollision = function(velocityX, velocityY){
     }
     var area = areas[this.areaId];
     for(var thing of area.things){
-        if(collideRectRect(this.x+velocityX, this.y+this.height/2+velocityY, this.width, this.height/2, thing.x, thing.y, thing.width, thing.height)){
-            if(collideRectRect(this.x, this.y+this.height/2+velocityY, this.width, this.height/2, thing.x, thing.y, thing.width, thing.height)){
+        if(collideRectRect(this.x+velocityX, this.y+this.height*4/5+velocityY, this.width, this.height/5, thing.x, thing.y, thing.width, thing.height)){
+            if(collideRectRect(this.x, this.y+this.height*4/5+velocityY, this.width, this.height/5, thing.x, thing.y, thing.width, thing.height)){
                 collision.y = true;
             }
-            if(collideRectRect(this.x+velocityX, this.y+this.height/2, this.width, this.height/2, thing.x, thing.y, thing.width, thing.height)){
+            if(collideRectRect(this.x+velocityX, this.y+this.height*4/5, this.width, this.height/5, thing.x, thing.y, thing.width, thing.height)){
                 collision.x = true;
             }
             if(!collision.x && !collision.y){
@@ -154,7 +166,7 @@ Player.prototype.thingCollision = function(velocityX, velocityY){
             }
         }
     }
-
+    return collision;a
 }
 Player.prototype.wallCollision = function(velocityX, velocityY){
     var collision = {
@@ -252,6 +264,9 @@ Player.prototype.show = function(){
         this.animationStep += 1;
     }
     var animationLabel = this.getAnimationLabel();
+    if(this.death && this.animationStep >= imageSrc[animationLabel].length){
+        return true;
+    }
     if(this.animationStep >= imageSrc[animationLabel].length){
         this.animationStep = 0;
     }
@@ -440,28 +455,28 @@ Room.prototype.roomToBlocks = function(){
 }
 Room.prototype.addEntrance = function(wallDirection, exitId){
     if(wallDirection == "top"){
-        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-4))+2) * this.blockSize;
+        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
         var entranceY =this.y + this.blockSize/2;
-        var width = this.blockSize*2;
+        var width = this.blockSize*4;
         var height = this.blockSize;
     }
     else if(wallDirection == "left"){
         var entranceX = this.x + this.blockSize/2
-        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-4))+2) * this.blockSize;
+        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
         var width = this.blockSize;
-        var height = this.blockSize*2;
+        var height = this.blockSize*4;
     }
     else if(wallDirection == "bottom"){
-        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-4))+2) * this.blockSize;
+        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
         var entranceY = this.y + this.height - this.blockSize/2;
-        var width = this.blockSize*2;
+        var width = this.blockSize*4;
         var height = this.blockSize;
     }
     else if(wallDirection == "right"){
         var entranceX = this.x + this.width - this.blockSize/2
-        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-4))+2) * this.blockSize;
+        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
         var width = this.blockSize;
-        var height = this.blockSize*2;
+        var height = this.blockSize*4;
     }   
     //console.log(areas)
     this.entrances.push(new Entrance(entranceX, entranceY, width, height, wallDirection, exitId, "room"));
@@ -964,6 +979,10 @@ Zombie.prototype.show = function(){
         if(frameCount % this.frameUpdate == 0){
             this.animationStep += 1;
         }
+        if(this.death && this.animationStep == imageSrc[animationLabel].length){
+            return true;
+        }
+        
         if(this.animationStep >= imageSrc[animationLabel].length){
             this.animationStep = 0;
         }
@@ -982,8 +1001,10 @@ Zombie.prototype.show = function(){
 
         //fill("purple");
         //rect(this.x, this.y, this.type.width, this.type.height);
-
-        if(this.aggravated){
+        if(this.death){
+            
+        }
+        else if(this.aggravated){
             textAlign(CENTER, BOTTOM);
             fill("red")
             stroke("black")
@@ -1406,6 +1427,7 @@ function displayTutorialSpace(){
     tutorialContent();
     tutorialActive = true;
     gameActive = false;
+    playerActive = false;
     noLoop();
 }
 
@@ -1414,6 +1436,7 @@ function hideTutorialSpace(){
     if(!gameOverScreen){
         setTimeout(function(){
             gameActive = true;
+            playerActive = true;
         }, 100);
     }
     tutorialActive = false;

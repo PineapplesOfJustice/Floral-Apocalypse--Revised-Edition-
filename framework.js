@@ -302,8 +302,9 @@ function draw() {
 // Support Animation
 
 function deathAnimation() {
-    gameActive = false;
+    //gameActive = false;
     player.death = true;
+    playerActive = false;
     inputUp = false;
     inputDown = false; 
     inputLeft = false;
@@ -317,6 +318,7 @@ function gameOverAnimation() {
 function restartAnimation() {
     restartScreen = true;
     gameActive = false;
+    playerActive = false;
     inputUp = false;
     inputDown = false; 
     inputLeft = false;
@@ -335,6 +337,7 @@ function gameReInitiation() {
     player = new Player(275, 280);
     
     gameOverScreen = false;
+    playerActive = true;
     addGameContent();
 }
 
@@ -359,7 +362,7 @@ function mouseClicked() {
             displayTutorialSpace();
         }
     }
-    else if(gameActive && player.equip == "Gun"){
+    else if(playerActive && player.equip == "Gun"){
         if(player.gun.ammo > 0 && !player.gun.cycle){
             var differenceX = Number(player.aimX) - Number(player.barrell.x);
             var differenceY = Number(player.aimY) - Number(player.barrell.y);
@@ -379,7 +382,7 @@ function mouseClicked() {
 }
 
 function keyPressed() {
-    if(gameActive){
+    if(playerActive){
         // W Key
         if(keyCode == 87){
             inputUp = true;
@@ -416,12 +419,12 @@ function keyPressed() {
     }
     // R Key
     else if(keyCode == 82 && gameOverScreen){
-        restartGame();
+        restartAnimation();
     }
 }
 
 function keyReleased() {
-    if(gameActive){
+    if(playerActive){
         // W Key
         if(keyCode == 87){
             inputUp = false;

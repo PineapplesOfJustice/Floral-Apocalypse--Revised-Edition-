@@ -4,6 +4,7 @@ var cameraX = 0;
 var cameraY = -500;
 
 var gameActive = false;
+var playerActive = false;
 var titleScreen = true;
 var gameOverScreen = false;
 var restartScreen = false;

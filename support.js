@@ -10,17 +10,17 @@ function Player(){
     this.equip = "Gun";
     this.aimX = 0;
     this.aimY = 0;
-    this.speed = 3;
+    this.speed = 5;
     this.motion = false;
     this.sneaking = false;
     this.sneakModifier = 0.5;
     this.gun = {
         tag: "ThornSpiker",
         damage: 4,
-        speed: 20,
+        speed: 25,
         ammo: 12,
         ammoMax: 12,
-        ROF: 0.15,
+        ROF: 0.12,
         cycle: false,
         reloadSpeed: 2.5,
     };
@@ -35,8 +35,8 @@ function Player(){
     this.direction = "right";
     this.death = false;
     
-    this.areaId = findAreaId(this.x, this.y, this.areaId);
-    this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
+    this.areaId = findAreaId(this.x+this.width/2, this.y+this.height/2, this.areaId);
+    this.roomId = findRoomId(this.x+this.width/2, this.y+this.height/2, this.areaId, this.roomId);
 }
 Player.prototype.updateGun = function(){
     this.aimX = mouseX - cameraX;
@@ -129,7 +129,7 @@ Player.prototype.updateKinematic = function(){
         }
 
         if(speedX != 0 || speedY != 0){
-            if((this.animationStep == imageSrc[this.getAnimationLabel()].length || this.animationStep == Math.floor(imageSrc[this.getAnimationLabel()].length)/2) && frameCount % this.frameUpdate == 0){
+            if((this.animationStep == 0 || this.animationStep == Math.floor(imageSrc[this.getAnimationLabel()].length)/2) && frameCount % this.frameUpdate == 0){
                 soundWaves.push(new soundWave(this.x+this.width/2, this.y+this.height/2, this.sneakModifier*randomNumber(15,25), 1, this.areaId, this.roomId));
             }
             this.motion = true;
@@ -457,26 +457,26 @@ Room.prototype.roomToBlocks = function(){
 }
 Room.prototype.addEntrance = function(wallDirection, exitId){
     if(wallDirection == "top"){
-        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
+        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-10))+5) * this.blockSize;
         var entranceY =this.y + this.blockSize/2;
         var width = this.blockSize*4;
         var height = this.blockSize;
     }
     else if(wallDirection == "left"){
         var entranceX = this.x + this.blockSize/2
-        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
+        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-10))+5) * this.blockSize;
         var width = this.blockSize;
         var height = this.blockSize*4;
     }
     else if(wallDirection == "bottom"){
-        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
+        var entranceX = this.x + (Math.floor(Math.random()*(this.blockX-10))+5) * this.blockSize;
         var entranceY = this.y + this.height - this.blockSize/2;
         var width = this.blockSize*4;
         var height = this.blockSize;
     }
     else if(wallDirection == "right"){
         var entranceX = this.x + this.width - this.blockSize/2
-        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-8))+4) * this.blockSize;
+        var entranceY = this.y + (Math.floor(Math.random()*(this.blockX-10))+5) * this.blockSize;
         var width = this.blockSize;
         var height = this.blockSize*4;
     }   
@@ -603,7 +603,8 @@ function Zombie(x, y, areaId, roomId, type){
     this.velocityX;
     this.velocityY;
     this.velocityDirection;
-    this.lineOfSight;
+    this.lineOfSight = {};
+    this.theta = 0;
     this.alerted = false;
     this.investigation = {};
     this.aggravated = false;
@@ -614,17 +615,18 @@ function Zombie(x, y, areaId, roomId, type){
     this.frameUpdate = 5;
     this.animationStep = 0;
     
-    this.roomId = findRoomId(x, y, areaId, roomId);
+    this.roomId = findRoomId(x+type.width/2, y+type.height/2, areaId, roomId);
     this.updateIdlePosition();
     this.updateKinematic();
+    this.updateThreatZone();
 }
 Zombie.prototype.updateKinematic = function(){
     var roomDilemma = false;
     var speedModifier = 1;
     if(this.aggravated){
         if(this.enemy.roomId == this.roomId){
-            var differenceX = this.enemy.x - this.x;
-            var differenceY = this.enemy.y - this.y;
+            var differenceX = this.enemy.x + this.enemy.width/2 - this.x - this.type.width/2;
+            var differenceY = this.enemy.y + this.enemy.height/2 - this.y - this.type.height/2;
         }
         else{
             roomDilemma = true;
@@ -644,20 +646,20 @@ Zombie.prototype.updateKinematic = function(){
                 }
             }
             if(chosenEntrance  == false){
-                var differenceX = this.enemy.x - this.x;
-                var differenceY = this.enemy.y - this.y;
+                var differenceX = this.enemy.x + this.enemy.width/2 - this.x - this.type.width/2;
+                var differenceY = this.enemy.y + this.enemy.height/2 - this.y - this.type.height/2;
             }
             else{
-                var differenceX = chosenEntrance.x - this.x;
-                var differenceY = chosenEntrance.y - this.y;
+                var differenceX = chosenEntrance.x - this.x - this.type.width/2;
+                var differenceY = chosenEntrance.y - this.y - this.type.height/2;
             }
         }
     }
     else if(this.alerted){
         speedModifier = 0.75;
         if(this.investigation.roomId == this.roomId){
-            var differenceX = this.investigation.x - this.x;
-            var differenceY = this.investigation.y - this.y;
+            var differenceX = this.investigation.x - this.x - this.type.width/2;
+            var differenceY = this.investigation.y - this.y - this.type.height/2;
         }
         else{
             roomDilemma = true;
@@ -677,30 +679,37 @@ Zombie.prototype.updateKinematic = function(){
                 }
             }
             if(!chosenEntrance){
-                var differenceX = this.investigation.x - this.x;
-                var differenceY = this.investigation.y - this.y;
+                var differenceX = this.investigation.x - this.x - this.type.width/2;
+                var differenceY = this.investigation.y - this.y - this.type.height/2;
             }
             else{
-                var differenceX = chosenEntrance.x - this.x;
-                var differenceY = chosenEntrance.y - this.y;
+                var differenceX = chosenEntrance.x - this.x - this.type.width/2;
+                var differenceY = chosenEntrance.y - this.y - this.type.height/2;
             }
         }
     }
     else{
         speedMofifier = 0.5;
-        var differenceX = this.idleLocationX - this.x;
-        var differenceY = this.idleLocationY - this.y;
+        var differenceX = this.idleLocationX - this.x - this.type.width/2;
+        var differenceY = this.idleLocationY - this.y - this.type.height/2;
     }
     var theta = findRotation(differenceX, differenceY);
     
     var hypotenuse = findHypotenuse(differenceX, differenceY);
-    if(this.aggravated){
+    if(this.aggravated && !roomDilemma){
         hypotenuse -= this.type.preferredDistanceFromEnemy;
-        differenceX = hypotenuse * Math.cos(theta); 
-        differenceY = hypotenuse * Math.sin(theta);
+        if(hypotenuse < 0){
+            hypotenuse = 0;
+        }
     }
     
     if(hypotenuse <= this.type.speed*speedModifier){ 
+        if(hypotenuse != 0){
+            this.theta = theta;
+            differenceX = hypotenuse * Math.cos(theta); 
+            differenceY = hypotenuse * Math.sin(theta);
+        }
+        
         this.x += differenceX;
         this.y += differenceY;
         
@@ -714,7 +723,7 @@ Zombie.prototype.updateKinematic = function(){
         }
         
         if(roomDilemma){
-            this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
+            this.roomId = findRoomId(this.x+this.type.width/2+posNeg(differenceX)*(1+chosenEntrance.width/2), this.y+this.type.height/2+posNeg(differenceY)*(1+chosenEntrance.height/2), this.areaId, this.roomId);
         }
         else if(this.aggravated){
             this.action = "attack";
@@ -748,15 +757,17 @@ Zombie.prototype.updateKinematic = function(){
         }
         
         if(!collision.x && !collision.y){
-            
+            this.theta = theta;
         }
         else if(!collision.x){
             this.velocityX = (this.type.speed * speedModifier) * posNeg(this.velocityX);
             this.velocityY = 0;
+            this.theta = findRotation(this.velocityX, this.velocityY);
         }
         else if(!collision.y){
             this.velocityX = 0;
             this.velocityY = (this.type.speed * speedModifier) * posNeg(this.velocityY);
+            this.theta = findRotation(this.velocityX, this.velocityY);
         }
         else{
             this.velocityX = 0;
@@ -764,7 +775,7 @@ Zombie.prototype.updateKinematic = function(){
         }
         this.x += this.velocityX;
         this.y += this.velocityY;
-        this.roomId = findRoomId(this.x, this.y, this.areaId, this.roomId);
+        //this.roomId = findRoomId(this.x+this.type.width/2, this.y+this.type.height/2, this.areaId, this.roomId);
     }
 }
 /*
@@ -782,12 +793,30 @@ Zombie.prototype.updateRoomId = function(){
     }
 }
 */
+Zombie.prototype.updateThreatZone = function(){
+    var originX = this.x + this.type.width/2;
+    var originY = this.y + this.type.height/2;
+    var deltaTheta = this.type.lineOfSight.angleMax / zombieThreatZoneSlices;
+    var initialTheta = this.theta - this.type.lineOfSight.angleMax/2;
+    this.lineOfSight = [
+        {
+            x: originX,
+            y: originY,
+        },
+    ]
+    for(var t=0; t<zombieThreatZoneSlices; t++){
+        this.lineOfSight.push({
+            x: originX + this.type.lineOfSight.distanceMax*Math.cos(initialTheta+t*deltaTheta),
+            y: originY + this.type.lineOfSight.distanceMax*Math.sin(initialTheta+t*deltaTheta),
+        });
+    }
+}
 Zombie.prototype.updateIdlePosition = function(){
     var mustRelocate = false;
     var theta = Math.random()*TWO_PI;
     var distance = (Math.random()*(this.type.idleLocationMaxDistance-50))+50;
-    var idleLocationX = this.x + distance * Math.cos(theta);
-    var idleLocationY = this.y + distance * Math.sin(theta);
+    var idleLocationX = this.x + this.type.width/2 + distance*Math.cos(theta);
+    var idleLocationY = this.y + this.type.height/2 + distance*Math.sin(theta);
     if(!mustRelocate && this.roomId != findRoomId(idleLocationX, idleLocationY, this.areaId, this.roomId)){
         mustRelocate = true;
     }
@@ -824,7 +853,7 @@ Zombie.prototype.soundCollision = function(){
     }
 }
 Zombie.prototype.threatZoneCollision = function(){
-    if(collideRectCircle(player.x, player.y, player.width, player.height, this.x+this.type.width/2, this.y+this.type.height/2, this.type.threatRadius)){
+    if(collideRectPoly(player.roomId == this.roomId && player.x, player.y, player.width, player.height, this.lineOfSight)){
         this.aggravated = true;
         this.enemy = player;
         if(this.alerted){
@@ -929,7 +958,7 @@ Zombie.prototype.zombieCollision = function(velocityX, velocityY){
     }
     for(var zombie of areas[this.areaId].zombies){
         if(zombie != this){
-            if(collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+            if(!zombie.death && collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
                 if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
                     collision.y = true;
                     while(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
@@ -1041,10 +1070,20 @@ Zombie.prototype.getAnimationLabel = function(){
     }
 }
 Zombie.prototype.showThreatZone = function(){
-    if(collideRectRect(-cameraX, -cameraY, width, height, this.x, this.y, this.type.width, this.type.height)){
+    var centerX  = (this.lineOfSight[0].x + this.lineOfSight[Math.ceil(this.lineOfSight.length/2)].x) / 2;
+    var centerY  = (this.lineOfSight[0].y + this.lineOfSight[Math.ceil(this.lineOfSight.length/2)].y) / 2;
+    var radius = centerX / 2;
+    if(collideRectCircle(-cameraX, -cameraY, width, height, centerX, centerY, radius)){
         fill(0, 50);
         stroke(0, 100);
-        ellipse(this.x+this.type.width/2, this.y+this.type.height/2, this.type.threatRadius);
+        //triangle(this.lineOfSight[0].x, this.lineOfSight[0].y, this.lineOfSight[1].x, this.lineOfSight[1].y, this.lineOfSight[2].x, this.lineOfSight[2].y);
+        
+        var lineOfSight=this.lineOfSight;
+        beginShape();
+        for(i=0, length=lineOfSight.length; i<length; i++){
+            vertex(lineOfSight[i].x, lineOfSight[i].y);
+        }
+        endShape(CLOSE);
     }
 }
 
@@ -1052,11 +1091,11 @@ function MeleeZombie(){
     this.maxHp = 20;
     this.width = 1080/30;
     this.height = 2057/30;
-    this.speed = 3.5;
+    this.speed = 6;
     this.soundThreshold = 100;
     this.lineOfSight = {
-        angleMax: 50,
-        distanceMax: 50,
+        angleMax: HALF_PI,
+        distanceMax: 200,
     }
     this.threatRadius = 280;
     this.preferredDistanceFromEnemy = 7;
@@ -1070,10 +1109,11 @@ MeleeZombie.prototype.attack = function(enemy){
     if(this.parent.animationStep == imageSrc[animationLabel].length-1){
         if(collideRectRect(this.parent.x, this.parent.y, this.width, this.height, enemy.x, enemy.y, enemy.width, enemy.height)){
             enemy.hp -= this.damage;
-            if(enemy.hp <= 0){
+            if(enemy.hp <= 0 && enemy.death != null){
+                enemy.hp = 0;
                 enemy.death = true;
                 this.parent.aggravated = false;
-                this.parent.enemy = null;
+                //this.parent.enemy = null;
                 deathAnimation();
                 this.parent.updateIdlePosition();
             }
@@ -1094,7 +1134,7 @@ function Investigation(x, y, roomId, curiousLevel){
 function Projectile(x, y, velocityX, velocityY, damage, type, areaId){
     this.x = x;
     this.y = y;
-    this.size = 10;
+    this.size = 12;
     this.velocityX = velocityX;
     this.velocityY = velocityY;
     this.damage = damage;
@@ -1183,11 +1223,11 @@ soundWave.prototype.expandRadius = function(){
 }
 soundWave.prototype.show = function(){
     noFill();
-    stroke(0, 150);
+    stroke(0, 120);
     if(this.zombiePinged.length > 0){
-        stroke(255, 100, 0, 150);
+        stroke(255, 70, 0, 150);
     }
-    var currentStrokeWeight = this.intensity/this.radius*40;
+    var currentStrokeWeight = this.intensity/this.radius*50;
     strokeWeight(currentStrokeWeight);
     ellipse(this.x, this.y, this.radius, this.radius);
 }
@@ -1439,7 +1479,7 @@ function hideTutorialSpace(){
         setTimeout(function(){
             gameActive = true;
             playerActive = true;
-        }, 100);
+        }, 10);
     }
     tutorialActive = false;
     loop();

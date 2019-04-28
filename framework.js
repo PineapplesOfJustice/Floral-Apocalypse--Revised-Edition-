@@ -2,45 +2,45 @@
 
 function preload() {/*
     soundSrc["soundtrack"] = loadSound('Asset/Music/Ambient/Shadowlands 3 - Machine.mp3');
-    soundSrc["soundtrack1"] = loadSound('Asset/Music/Combat/Mistake the Getaway.mp3')
-    soundSrc["soundtrack2"] = loadSound('Asset/Music/Other/Serpentine Trek.mp3')
-    soundSrc["footstep"] = loadSound('Asset/Sound/Walking/footstep00.ogg')
-    soundSrc["footstep2"] = loadSound('Asset/Sound/Walking/footstep01.ogg')
-    soundSrc["footstep3"] = loadSound('Asset/Sound/Walking/footstep02.ogg')
-    soundSrc["footstep4"] = loadSound('Asset/Sound/Walking/footstep03.ogg')
-    soundSrc["footstep5"] = loadSound('Asset/Sound/Walking/footstep04.ogg')
-    soundSrc["footstep6"] = loadSound('Asset/Sound/Walking/footstep05.ogg')
-    soundSrc["footstep7"] = loadSound('Asset/Sound/Walking/footstep06.ogg')
-    soundSrc["footstep8"] = loadSound('Asset/Sound/Walking/footstep07.ogg')
-    soundSrc["footstep9"] = loadSound('Asset/Sound/Walking/footstep08.ogg')
-    soundSrc["footstep10"] = loadSound('Asset/Sound/Walking/footstep09.ogg')
-    soundSrc["playerattack"] = loadSound('Asset/Sound/Player/Player_Attack.mp3')
-    soundSrc["ambience"] = loadSound('Asset/Sound/Zombie/Zombie_Ambience (1).wav')
-    soundSrc["ambience2"] = loadSound('Asset/Sound/Zombie/Zombie_Ambience (2).wav')
-    soundSrc["ambienc3"] = loadSound('Asset/Sound/Zombie/Zombie_Ambience (3).wav')
-    soundSrc["zombiedeath1"] = loadSound('Asset/Sound/Zombie/Zombie_Death.wav')
-    soundSrc["zombiedeath2"] = loadSound('Asset/Sound/Zombie/Zombie_Death1.wav')
-    soundSrc["grunt"] = loadSound('Asset/Sound/Zombie/Zombie_Grunt.wav')
-    soundSrc["zombiesound1"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (2).wav')
-    soundSrc["zombiesound2"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (3).wav')
-    soundSrc["zombiesound3"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (5).wav')
-    soundSrc["zombiesound4"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (6).wav')
-    soundSrc["zombiesound5"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (9).wav')
-    soundSrc["zombiesound6"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (10).wav')
-    soundSrc["zombiesound7"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (11).wav')
-    soundSrc["zombiesound8"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (12).wav')
-    soundSrc["zombiesound9"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (13).wav')
-    soundSrc["zombiesound10"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (14).wav')
-    soundSrc["zombiesound11"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (15).wav')
-    soundSrc["zombiesound12"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (16).wav')
-    soundSrc["zombiesound13"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (17).wav')
-    soundSrc["zombiesound14"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (18).wav')
-    soundSrc["zombiesound15"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (19).wav')
-    soundSrc["zombiesound16"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (20).wav')
-    soundSrc["zombiesound17"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (21).wav')
-    soundSrc["zombiesound18"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (23).wav')
-    soundSrc["zombiesound19"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (24).wav')
-    soundSrc["zombiesound20"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (25).wav')*/
+    soundSrc["soundtrack1"] = loadSound('Asset/Music/Combat/Mistake the Getaway.mp3');
+    soundSrc["soundtrack2"] = loadSound('Asset/Music/Other/Serpentine Trek.mp3');
+    soundSrc["footstep"] = loadSound('Asset/Sound/Walking/footstep00.ogg');
+    soundSrc["footstep2"] = loadSound('Asset/Sound/Walking/footstep01.ogg');
+    soundSrc["footstep3"] = loadSound('Asset/Sound/Walking/footstep02.ogg');
+    soundSrc["footstep4"] = loadSound('Asset/Sound/Walking/footstep03.ogg');
+    soundSrc["footstep5"] = loadSound('Asset/Sound/Walking/footstep04.ogg');
+    soundSrc["footstep6"] = loadSound('Asset/Sound/Walking/footstep05.ogg');
+    soundSrc["footstep7"] = loadSound('Asset/Sound/Walking/footstep06.ogg');
+    soundSrc["footstep8"] = loadSound('Asset/Sound/Walking/footstep07.ogg');
+    soundSrc["footstep9"] = loadSound('Asset/Sound/Walking/footstep08.ogg');
+    soundSrc["footstep10"] = loadSound('Asset/Sound/Walking/footstep09.ogg');
+    soundSrc["playerattack"] = loadSound('Asset/Sound/Player/Player_Attack.mp3');
+    soundSrc["ambience"] = loadSound('Asset/Sound/Zombie/Zombie_Ambience (1).wav');
+    soundSrc["ambience2"] = loadSound('Asset/Sound/Zombie/Zombie_Ambience (2).wav');
+    soundSrc["ambienc3"] = loadSound('Asset/Sound/Zombie/Zombie_Ambience (3).wav');
+    soundSrc["zombiedeath1"] = loadSound('Asset/Sound/Zombie/Zombie_Death.wav');
+    soundSrc["zombiedeath2"] = loadSound('Asset/Sound/Zombie/Zombie_Death1.wav');
+    soundSrc["grunt"] = loadSound('Asset/Sound/Zombie/Zombie_Grunt.wav');
+    soundSrc["zombiesound1"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (2).wav');
+    soundSrc["zombiesound2"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (3).wav');
+    soundSrc["zombiesound3"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (5).wav');
+    soundSrc["zombiesound4"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (6).wav');
+    soundSrc["zombiesound5"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (9).wav');
+    soundSrc["zombiesound6"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (10).wav');
+    soundSrc["zombiesound7"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (11).wav');
+    soundSrc["zombiesound8"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (12).wav');
+    soundSrc["zombiesound9"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (13).wav');
+    soundSrc["zombiesound10"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (14).wav');
+    soundSrc["zombiesound11"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (15).wav');
+    soundSrc["zombiesound12"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (16).wav');
+    soundSrc["zombiesound13"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (17).wav');
+    soundSrc["zombiesound14"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (18).wav');
+    soundSrc["zombiesound15"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (19).wav');
+    soundSrc["zombiesound16"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (20).wav');
+    soundSrc["zombiesound17"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (21).wav');
+    soundSrc["zombiesound18"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (23).wav');
+    soundSrc["zombiesound19"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (24).wav');
+    soundSrc["zombiesound20"] = loadSound('Asset/Sound/Zombie/Zombies Sound Effects Pack/ZOMBIE SOUNDZ (25).wav');*/
     
     fontSrc["chakraPetch"] = loadFont("Asset/Font/ChakraPetch-Medium.ttf");
     fontSrc["fellEnglish"] = loadFont("Asset/Font/Fell English.ttf");
@@ -86,7 +86,7 @@ function preload() {/*
     //imageSrc["roadHorizontal"] = loadImage("Asset/Image/miscellaneous/Mossy & Cracked Road.png");
     //imageSrc["roadVertical"] = loadImage("Asset/Image/miscellaneous/Mossy & Cracked Road Vertical.png");
 
-    //imageSrc["tree"] = [loadImage("Asset/Image/miscellaneous/tree/0.png"), loadImage("Asset/Image/miscellaneous/tree/1.png"), loadImage("Asset/Image/miscellaneous/tree/2.png"), loadImage("Asset/Image/miscellaneous/tree/3.png"), loadImage("Asset/Image/miscellaneous/tree/4.png"), loadImage("Asset/Image/miscellaneous/tree/5.png"), loadImage("Asset/Image/miscellaneous/tree/6.png"), loadImage("Asset/Image/miscellaneous/tree/7.png"), loadImage("Asset/Image/miscellaneous/tree/8.png"), loadImage("Asset/Image/miscellaneous/tree/9.png"), loadImage("Asset/Image/miscellaneous/tree/10.png"), loadImage("Asset/Image/miscellaneous/tree/11.png"), loadImage("Asset/Image/miscellaneous/tree/12.png"), loadImage("Asset/Image/miscellaneous/tree/13.png"), loadImage("Asset/Image/miscellaneous/tree/14.png"), loadImage("Asset/Image/miscellaneous/tree/15.png"), loadImage("Asset/Image/miscellaneous/tree/16.png"), loadImage("Asset/Image/miscellaneous/tree/17.png"), loadImage("Asset/Image/miscellaneous/tree/18.png")];
+    /*imageSrc["tree"] = [loadImage("Asset/Image/miscellaneous/tree/0.png"), loadImage("Asset/Image/miscellaneous/tree/1.png"), loadImage("Asset/Image/miscellaneous/tree/2.png"), loadImage("Asset/Image/miscellaneous/tree/3.png"), loadImage("Asset/Image/miscellaneous/tree/4.png"), loadImage("Asset/Image/miscellaneous/tree/5.png"), loadImage("Asset/Image/miscellaneous/tree/6.png"), loadImage("Asset/Image/miscellaneous/tree/7.png"), loadImage("Asset/Image/miscellaneous/tree/8.png"), loadImage("Asset/Image/miscellaneous/tree/9.png"), loadImage("Asset/Image/miscellaneous/tree/10.png"), loadImage("Asset/Image/miscellaneous/tree/11.png"), loadImage("Asset/Image/miscellaneous/tree/12.png"), loadImage("Asset/Image/miscellaneous/tree/13.png"), loadImage("Asset/Image/miscellaneous/tree/14.png"), loadImage("Asset/Image/miscellaneous/tree/15.png"), loadImage("Asset/Image/miscellaneous/tree/16.png"), loadImage("Asset/Image/miscellaneous/tree/17.png"), loadImage("Asset/Image/miscellaneous/tree/18.png")];*/
 
     imageSrc["hitmarker"] = [loadImage("Asset/Image/miscellaneous/hitmarker/0.png"), loadImage("Asset/Image/miscellaneous/hitmarker/1.png")];
 
@@ -108,6 +108,8 @@ function setup() {
     projectiles = [];
     
     addGameContent();
+    
+    collideDebug(true);
 }
 
 
@@ -195,9 +197,9 @@ function draw() {
             }
         }
         
-        player.areaId = findAreaId(player.x,player.y, player.areaId);
-        player.roomId = findRoomId(player.x,player.y, player.areaId, player.roomId);
         player.updateKinematic();
+        player.areaId = findAreaId(player.x+player.width/2, player.y+player.height/2, player.areaId);
+        player.roomId = findRoomId(player.x+player.width/2, player.y+player.height/2, player.areaId, player.roomId);
         player.updateGun();
         if(player.death == false){
             player.showHpBar();
@@ -224,11 +226,13 @@ function draw() {
                     }
                     else if(current.action == "motion"){
                         current.updateKinematic();
+                        current.updateThreatZone();
                         current.soundCollision();
                         current.threatZoneCollision();
                         current.playerCollision();
                     }
                     else if(current.action == "attack"){
+                        current.updateThreatZone();
                         current.type.attack(current.enemy);
                     }
                     current.showHpBar();
@@ -277,7 +281,14 @@ function draw() {
             }
         }
         else{
-            if(restartSeparateX < width){
+            if(restartSeparateX > 0 && restartSeparateY >= height){
+                restartSeparateX -= restartSpeed*5;
+                if(restartSeparateX <= 0){
+                    restartSeparateX = 0;
+                    restartGame();
+                }
+            }
+            else if(restartSeparateX < width){
                 restartSeparateX += restartSpeed*5;
                 if(restartSeparateX > width){
                     restartSeparateX = width;
@@ -285,26 +296,43 @@ function draw() {
             }
             else if(restartSeparateY < height){
                 restartSeparateY += restartSpeed*2;
-                if(restartSeparateY >= height){
+                if(restartSeparateY > height){
                     restartSeparateY = height;
-                    restartGame();
                 }
             }
+            
             fill("black");
             noStroke();
-            beginShape();
-            vertex(-cameraX, -cameraY);
-            vertex(width/2 - cameraX, -cameraY);
-            vertex(width/2 - cameraX - restartSeparateX/2, height - cameraY - restartSeparateY);
-            vertex(-cameraX, height - cameraY - restartSeparateY);
-            endShape();
+            if(restartSeparateY < height){
+                beginShape();
+                vertex(width/2 - cameraX, height/2 - cameraY);
+                vertex(width/2 - cameraX - restartSeparateX/2, height - cameraY - restartSeparateY);
+                vertex(-cameraX, height - cameraY - restartSeparateY);
+                vertex(-cameraX, -cameraY);
+                vertex(width/2 - cameraX, -cameraY);
+                endShape();
             
-            beginShape();
-            vertex(width - cameraX, -cameraY);
-            vertex(width/2 - cameraX, -cameraY);
-            vertex(width/2 - cameraX + restartSeparateX/2, height - cameraY - restartSeparateY);
-            vertex(width - cameraX, height - cameraY - restartSeparateY);
-            endShape();
+                beginShape();
+                vertex(width/2 - cameraX, height/2 - cameraY);
+                vertex(width/2 - cameraX + restartSeparateX/2, height - cameraY - restartSeparateY);
+                vertex(width - cameraX, height - cameraY - restartSeparateY);
+                vertex(width - cameraX, -cameraY);
+                vertex(width/2 - cameraX, -cameraY);
+                endShape();
+            }
+            else{
+                beginShape();
+                vertex(width/2 - cameraX, height/2 - cameraY);
+                vertex(width/2 - cameraX - restartSeparateX/2, -cameraY);
+                vertex(width/2 - cameraX, -cameraY);
+                endShape();
+            
+                beginShape();
+                vertex(width/2 - cameraX, height/2 - cameraY);
+                vertex(width/2 - cameraX + restartSeparateX/2, -cameraY);
+                vertex(width/2 - cameraX, -cameraY);
+                endShape();
+            }
         }
     }
 }
@@ -344,8 +372,6 @@ function restartAnimation() {
     inputDown = false; 
     inputLeft = false;
     inputRight = false;
-    
-    console.log("restart")
 }
 
 function gameReInitiation() {
@@ -364,8 +390,6 @@ function gameReInitiation() {
     playerActive = false;
     addGameContent();
     player = new Player();
-    
-    console.log("reinitiation")
 }
 
 function restartGame() {
@@ -378,8 +402,6 @@ function restartGame() {
     restartRadius = 0;
     restartSeparateX = 0; 
     restartSeparateY = 0; 
-    
-    console.log("truerestart")
 }
 
 
@@ -451,7 +473,7 @@ function keyPressed() {
         } 
     }
     // R Key
-    else if(keyCode == 82 && gameOverScreen){
+    if(keyCode == 82 && !titleScreen){
         restartAnimation();
     }
 }

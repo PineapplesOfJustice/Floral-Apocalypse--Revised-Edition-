@@ -19,6 +19,8 @@ var soundWaves = [];
 var projectiles = [];
 var milestone = {};
 
+var zombieThreatZoneSlices = 8;
+
 var imageSrc = {};
 var fontSrc = {};
 var soundSrc = {};

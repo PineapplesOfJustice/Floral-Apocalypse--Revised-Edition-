@@ -41,10 +41,9 @@ canvas {
 }
 
 #p5_loading img {
-    height: 160vh;
+    height: 110vh;
     width: auto;
     margin: auto;
-    margin-top: -20vh;
     display: block;
 }
 

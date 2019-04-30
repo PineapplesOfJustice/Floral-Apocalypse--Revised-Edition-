@@ -30,7 +30,7 @@ function Player(){
     };
     this.areaId = 0;
     this.roomId = null; 
-    this.frameUpdate = 5; 
+    this.frameUpdate = 3; 
     this.animationStep = 0;
     this.direction = "right";
     this.death = false;
@@ -612,7 +612,7 @@ function Zombie(x, y, areaId, roomId, type){
     this.action = "motion";
     this.death = false;
     this.direction = "right";
-    this.frameUpdate = 5;
+    this.frameUpdate = 3;
     this.animationStep = 0;
     
     this.roomId = findRoomId(x+type.width/2, y+type.height/2, areaId, roomId);
@@ -751,10 +751,8 @@ Zombie.prototype.updateKinematic = function(){
         this.velocityX = (this.type.speed * speedModifier) * Math.cos(theta);
         this.velocityY = (this.type.speed * speedModifier) * Math.sin(theta);
         
+        this.zombieCollision(this.velocityX, this.velocityY);
         var collision = this.wallCollision(this.velocityX, this.velocityY);
-        if(!collision.x && !collision.y){ 
-            collision = this.zombieCollision(this.velocityX, this.velocityY);
-        }
         
         if(!collision.x && !collision.y){
             this.theta = theta;
@@ -928,12 +926,18 @@ Zombie.prototype.wallCollision = function(velocityX, velocityY){
                             collision.y = true;
                             while(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
                                 this.y -= posNeg(velocityY);
+                                if(velocityY == 0){
+                                    this.y -= 1;
+                                }
                             }
                         }
                         if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
                             collision.x = true;
                             while(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, block.x, block.y, block.blockSize, block.blockSize)){
                                 this.x -= posNeg(velocityX);
+                                if(velocityX == 0){
+                                    this.x -= 1;
+                                }
                             }
                         }
                         if(!collision.x && !collision.y){
@@ -956,18 +960,22 @@ Zombie.prototype.zombieCollision = function(velocityX, velocityY){
         x: false,
         y: false,
     }
-    for(var zombie of areas[this.areaId].zombies){
-        if(zombie != this){
+    for(var i=0, iLength=areas[this.areaId].zombies.length, meetSelf=false; i<iLength; i++){
+        var zombie = areas[this.areaId].zombies[i];
+        if(zombie == this){
+            meetSelf = true;
+        }
+        else if(meetSelf){
             if(!zombie.death && collideRectRect(this.x+velocityX, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
-                if(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                if(collideRectRect(this.x, this.y+this.type.height/3+velocityY, this.type.width, this.type.height/3, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
                     collision.y = true;
-                    while(collideRectRect(this.x, this.y+velocityY, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                    while(collideRectRect(this.x, this.y+this.type.height/3+velocityY, this.type.width, this.type.height/3, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
                         this.y -= posNeg(velocityY);
                     }
                 }
-                if(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                if(collideRectRect(this.x+this.type.width/3+velocityX, this.y, this.type.width/3, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
                     collision.x = true;
-                    while(collideRectRect(this.x+velocityX, this.y, this.type.width, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
+                    while(collideRectRect(this.x+this.type.width/3+velocityX, this.y, this.type.width/3, this.type.height, zombie.x, zombie.y, zombie.type.width, zombie.type.height)){
                         this.x -= posNeg(velocityX);
                     }
                 }
@@ -997,7 +1005,7 @@ Zombie.prototype.showHpBar = function(){
         }
         fill(255, 100);
         stroke("black");
-        strokeWeight(1);
+        strokeWeight(2);
         rect(this.x, this.y+this.type.height+5, this.type.width, 5);
         fill("red");
         rect(this.x, this.y+this.type.height+5, hpWidth, 5);
@@ -1101,7 +1109,7 @@ function MeleeZombie(){
     this.preferredDistanceFromEnemy = 7;
     
     this.idleLocationMaxDistance = 250;
-    this.damage = 3;
+    this.damage = 1;
     this.tag = "meleeZombie";
 }
 MeleeZombie.prototype.attack = function(enemy){

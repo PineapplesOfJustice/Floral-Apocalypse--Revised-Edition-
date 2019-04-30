@@ -343,6 +343,7 @@ function draw() {
 function deathAnimation() {
     //gameActive = false;
     player.death = true;
+    player.frameUpdate = 30;
     playerActive = false;
     inputUp = false;
     inputDown = false; 
